@@ -1,11 +1,52 @@
 <!DOCTYPE html>
 <html>
 	<head>
+		<link rel=“stylesheet” type=“text/css”  href="style.css" />
 		<script src="./jquery-3.4.1.slim.min.js"></script>
 		<script type="text/javascript" src="./app.js"></script>
+
+		<style>
+			.menu{
+				position: relative;
+				width: 100%;
+				background-color: #333;
+				list-style-type: none;
+				margin: 0;
+				overflow: hidden;
+			}
+
+			.menu a {
+				display: block;
+				color: white;
+				text-align: center;
+				padding: 18px 100px;
+				text-decoration: none;
+				float: left;
+    			border-right:1px solid #bbb;
+			}
+
+			.menu img{
+				height: 100%;
+				width: 16%;
+				float: right;
+			}
+
+			.menu a:hover{
+				background-color: #111;
+			}
+		</style>
+
 	</head>
 
 	<body>
+		<div class="menu">
+			<img src="Img/pacman logo black background.jpg">
+			<a href="#about">Welcome</a>
+			<a href="#photos">Register</a>
+			<a href="#playlist">Log in</a>
+			<a href="#like">About</a>
+
+		</div>
 		<div id="score">
 			<label for="lblScore">SCORE:</label>
 			<input id="lblScore" type="text" />
