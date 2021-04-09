@@ -1,62 +1,67 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<link rel=“stylesheet” type=“text/css”  href="style.css" />
+		<link rel='stylesheet' type='text/css'  href='./style.css' />
 		<script src="./jquery-3.4.1.slim.min.js"></script>
 		<script type="text/javascript" src="./app.js"></script>
-
-		<style>
-			.menu{
-				position: relative;
-				width: 100%;
-				background-color: #333;
-				list-style-type: none;
-				margin: 0;
-				overflow: hidden;
-			}
-
-			.menu a {
-				display: block;
-				color: white;
-				text-align: center;
-				padding: 18px 100px;
-				text-decoration: none;
-				float: left;
-    			border-right:1px solid #bbb;
-			}
-
-			.menu img{
-				height: 100%;
-				width: 16%;
-				float: right;
-			}
-
-			.menu a:hover{
-				background-color: #111;
-			}
-		</style>
-
+	
 	</head>
 
 	<body>
+		<div id="outer">
+		<div class="header">
+			<img src="Img/pacman logo black background.jpg" style="height: 100px; width: 250px;"/>
+			<label id="appName"> Packman 2021</label>
+			<label id="submittersDetails"> Ron Tyntarev:208205765, Tomer Aizikovich:208297119</label>
+		</div>
+	
 		<div class="menu">
-			<img src="Img/pacman logo black background.jpg">
-			<a href="#about">Welcome</a>
-			<a href="#photos">Register</a>
-			<a href="#playlist">Log in</a>
-			<a href="#like">About</a>
+			<a href="#welcome">Welcome</a>
+			<a href="#register">Register</a>
+			<a href="#logIn">Log in</a>
+			<a href="#settings">Settings</a>
+			<a href="#about">About</a>
 
 		</div>
-		<div id="score">
-			<label for="lblScore">SCORE:</label>
-			<input id="lblScore" type="text" />
-		</div>
-		<div id="time">
-			<label for="lblTime">TIME:</label>
-			<input id="lblTime" type="text" />
-		</div>
-		<div id="game">
-			<canvas id="canvas" height="600" width="600"></canvas>
+	
+			
+			<div id="welcomeContainer">
+				<img src="Img/pacman logo black background.jpg" style="height: 350px; width: 550px; margin-left: 25%; margin-right: 25%;">
+				<div id="buttonsContainer">
+					<button id="registerButton" class="welcomeButtons" onclick="register">Register</button>
+					<button id="logInButton" class="welcomeButtons" style="display: inline-flex; align-items: flex-end;">Log In</button>
+				</div>
+			</div>
+
+			<div id="registerDiv">
+				<u><label style="font-weight: bold; font-style: italic;">Please enter your details:</label></u>
+				<form action="#" onsubmit="validateDataAfterRegistretion()" method="POST">
+					<table>
+						<tr>
+					<td><label for="userName">User Name:</label></td>
+					<td><input type="text",id="userName",name="userName"/></td>
+				</tr>
+				<tr>
+					<td><label for="password">Password:</label>	</td>
+					<td><input type="password",id="password",name="password"></td>
+				</tr>
+				<tr>
+					<td><label for="fullName">Full Name:</label></td>
+					<td><input type="text", id="fullName",name="fullName"></td>
+				</tr>
+				<tr>
+					<td><label for="email">Email:</label></td>
+					<td><input type="text",id="email",name="email"></td>
+				</tr>
+				<tr>
+					<td><label for="birthDate">Birth Date:</label></td>
+					<td><input type="date",id="birthDate",name="birthDate"></td>
+				</tr>
+				<tr><td><input type="submit" id="submitButton",value="submit"></td></tr>
+					
+				</table>
+				</form>
+			</div>
 		</div>
 	</body>
 </html>

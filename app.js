@@ -170,3 +170,68 @@ function UpdatePosition() {
 		Draw();
 	}
 }
+
+function validateDataAfterRegistretion(){
+	userName=$("#userName").val();
+	if(userName==""){
+		alert("Empty userName!");
+		return;
+	}
+	password=$("#password").val();
+	if(password==""){
+		alert("Please fill the password field");
+		return;
+	}
+	if(!checkPassword(password)){
+		alert("Please fill the password again");
+		return;
+	}
+	fullName=$("#fullName").val();
+	if(fullName==""){
+		alert("Please fill full name");
+		return;
+	}
+	if(!checkFullName(fullName)){
+		alert("Please refill the full name again");
+		return;
+	}
+}
+
+function checkPassword(password){
+	if(password.length<6){
+		alert("Password should contain at least 6 chars");
+		return false;
+	}
+	let containsLetters=false;
+	let containDigits=false;
+	for(let i=0;i<password.length;i++){//loop over password and check if contains letters or digits
+		let asciiValue=password.charAt(i).charCodeAt(0);
+		if(!containDigits){//check if contain digits
+			if(asciiValue>=48 && asciiValue<=57){
+				containDigits=true;
+				continue;
+			}
+		}
+		if(!containsLetters){//check if contain letters
+			if(asciiValue>=65 && asciiValue<=122){
+				containsLetters=true;
+				continue;
+			}
+		}
+	}
+	if(!containDigits || !containsLetters){
+		alert("Password should contain letters and digits");
+		return false;
+	}
+	return true;
+}
+
+function checkFullName(fullName){
+	for(let i=0;i<fullName.length;i++){
+		let asciiValue=fullName.charAt(i).charCodeAt(0);
+		if(asciiValue>=48 && asciiValue<=57){
+			return false;
+		}
+	}
+	return true;
+}
