@@ -97,3 +97,29 @@ html,body{
   margin-top: 1%;
 }
 
+.errorRow{
+  display: none;
+}
+
+.errorRow td{
+  color: red;
+  column-span: all;
+  text-align: center;
+  vertical-align: middle;
+}
+
+#gameAndSettingsDiv{
+  display: none;
+  flex-grow: 1;
+  flex-direction: row;
+}
+
+#informationDiv{
+  flex-direction: row;
+  float: left;
+}
+
+#gameDiv{
+  display: none;
+  flex-direction: column;
+}

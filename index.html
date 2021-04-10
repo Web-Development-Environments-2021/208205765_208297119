@@ -62,6 +62,94 @@
 				</table>
 				</form>
 			</div>
+			<div id="gameAndSettingsDiv">
+				<div id="gameDiv">
+					<p id="usernameToShow"></p>
+					<div id="informationDiv">
+						<label class="informationLabels">Time:</label>
+						<label id="timeLabel"></label>
+						<label class="informationLabels">Score:</label>
+						<label id="scoreLabel"></label>
+						<label class="informationLabels">Lives:</label>
+						<label id="livesLabel"></label>
+					</div>
+					<div id="gameBoardDiv">
+
+					</div>
+				</div>
+			<div id="settingsDiv">
+				<h3><u>Please set your settings:</u></h3>
+				<br/>
+				<form onsubmit="return false;">
+				<table style="font-weight: bold;">
+					<tr>
+						<td>Key Up:</td>
+						<td><input id="keyUp" name="keyUp" type="text" readonly placeholder="Press any key"></td>
+					</tr>
+					<tr id="errorKeyUp"  class="errorRow">
+						<td >Please enter key for up movment</td>
+					</tr>
+					<tr>
+						<td>Key down:</td>
+						<td><input id="keyDown" type="text" readonly placeholder="Press any key"></td>
+					</tr>
+					<tr id="errorKeyDown" class="errorRow">
+						<td colspan="2" style="color: red;">Please enter key for down movment</td>
+					</tr>
+					<tr>
+						<td>Key Left:</td>
+						<td><input id="keyLeft" type="text" readonly placeholder="Press any key"></td>
+					</tr>
+					<tr id="errorLeftKey" class="errorRow"> 
+						<td >Please enter key for left movment</td>
+					</tr>
+					<tr>
+						<td>Key Right:</td>
+						<td><input id="keyRight" readonly type="text" placeholder="Press any key"></td>
+					</tr>
+					<tr id="rightKeyError" class="errorRow" >
+						<td >Please enter key for right movment</td>
+					</tr>
+					<tr>
+						<td>Number of balls in the game:</td>
+						<td><input type="text" placeholder="from 50 to 90" id="numberOfBalls"></td>
+					</tr>
+					<tr id="errorBallsNumber" class="errorRow">
+						<td></td>
+					</tr>
+					<tr>
+						<td>Color for 5 points balls:</td>
+						<td><input type="color" id="fivePointsColorPicker" ></td>
+					</tr>
+					<tr>
+						<td>Color for 15 points balls:</td>
+						<td><input type="color" id="fifteenPointsColorPicker"></td>
+					</tr>
+					<tr>
+						<td>Color for 25 points balls:</td>
+						<td><input type="color" id="twentyFivePointsColorPicker"></td>
+					</tr>
+					<tr>
+						<td>Time for game (in seconds):</td>
+						<td><input type="text" id="gameTimeInput" placeholder="Min 60 seconds"></td>
+					</tr>
+					<tr class="errorRow" id="gameTimeError">
+						<td></td>
+					</tr>
+					<tr>
+						<td>Number of monsters:</td>
+						<td><input type="text" id="monstersPicker" placeholder="Min 1, Max 4"></td>
+					</tr>
+					<tr class="errorRow" id="monstersNumberError"><td></td></tr>
+					<tr>
+						<td><button id="settingsButton" onclick="validateSettings()">Save settings</button></td>
+						<td ><button id="randomButton" onclick="generateRandomSettings()" >Generate random settings</button></td>
+					</tr>
+				</table>
+			</form>
+			</div>
+			
+		</div>
 			<footer style="bottom:0; background-color: chocolate;">
 				<table style="font-weight: bolder;">
 					<tr>
