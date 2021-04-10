@@ -87,8 +87,39 @@ function checkFullName(fullName){
 	return true;
 }
 
+function validateDetailsAfterLogIn(){
+	let userName=$('#LIuserName').val();
+	if(userName==""){
+		alert("Empty userName!");
+		return;
+	}
+
+	let password=$("#LIpassword").val();
+	if(password==""){
+		alert("Please fill the password field");
+		return;
+	}
+	if (password == usersDict[userName]){
+		switchDivs("#welcomeContainer","flex");		
+	}
+	else{
+		alert("User name or password are incorrect");
+		return;
+	}
+}
+
+function checkUserNameToPassword(userName, password){
+	if (usersDict[userName] == password)
+		return true;
+	return false;
+}
+
 function register(){
 	switchDivs("#registerDiv","block");	
+}
+
+function logIn(){
+	switchDivs("#logInDiv","block");
 }
 
 function showWelcomeScreen(){
@@ -104,4 +135,9 @@ function switchDivs(newDivToSwitchTo,display){
 	$(currentDisplayedDiv).css("display","none");
 	currentDisplayedDiv=newDivToSwitchTo;
 	$(newDivToSwitchTo).css("display",display);
+}
+
+
+function AddUsers(){
+	usersDict["ttt"]=["123","tre","asdf.com","12/8/1035"];
 }
