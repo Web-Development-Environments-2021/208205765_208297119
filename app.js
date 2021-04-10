@@ -1,6 +1,8 @@
 
 let usersDict={"k":["k","","",""]};
 let currentDisplayedDiv="#welcomeContainer";
+usersDict["k"] = ["k", "k", "k", "k"]
+usersDict["ttt"]=["123","tre","asdf.com","12/8/1035"];
 
 function validateDataAfterRegistretion(){
 	let userName=$('#userName').val();
@@ -93,25 +95,29 @@ function validateDetailsAfterLogIn(){
 		alert("Empty userName!");
 		return;
 	}
+	if(userName=="k"){
+		return;
+	}
 
 	let password=$("#LIpassword").val();
 	if(password==""){
 		alert("Please fill the password field");
 		return;
 	}
-	if (password == usersDict[userName]){
-		switchDivs("#welcomeContainer","flex");		
+
+	if (!(userName in usersDict)){
+		alert("This user name dosent exist at the system");
+		return;
+	}
+
+	if (password == usersDict[userName][0]){
+		document.getElementById("demo").innerHTML = "Tomerrrr";
+		//start game here TODO
 	}
 	else{
 		alert("User name or password are incorrect");
 		return;
 	}
-}
-
-function checkUserNameToPassword(userName, password){
-	if (usersDict[userName] == password)
-		return true;
-	return false;
 }
 
 function register(){
@@ -138,6 +144,7 @@ function switchDivs(newDivToSwitchTo,display){
 }
 
 
-function AddUsers(){
-	usersDict["ttt"]=["123","tre","asdf.com","12/8/1035"];
+function clean(){
+	document.getElementById("demo").innerHTML = "";
+	usersDict["ron"]=["123","ron","asdf.com","12/8/1900"];
 }
