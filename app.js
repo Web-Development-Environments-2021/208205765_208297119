@@ -7,7 +7,9 @@ let ballsNumber=0;
 let timeOfGame=0;
 let monstersNumber=0;
 let ballsColors={};
-usersDict["t"] = ["1", "", "", ""]
+usersDict["t"] = ["1", "", "", ""]// to delete!!!!!!!!!!!!!!!!!!!!!!!!!!!
+let board=new Array(14);
+
 
 
 function validateDataAfterRegistretion(){
@@ -102,10 +104,7 @@ function validateDetailsAfterLogIn(){
 		alert("Empty userName!");
 		return;
 	}
-	if(userName=="k"){
-		return;
-	}
-
+	
 	let password=$("#LIpassword").val();
 	if(password==""){
 		alert("Please fill the password field");
@@ -197,6 +196,7 @@ function validateSettings(){
 		ballsColors["15"]=fifteenPointsColorPicker;
 		ballsColors["25"]=twentyFivePointsColorPicker;
 		$("#gameDiv").css("display","flex");
+		createGame();
 	}
 }
 
@@ -274,6 +274,7 @@ function generateRandomSettings(){
 	ballsColors["25"]="green";
 	updateSettingsValues();
 	$("#gameDiv").css("display","flex");
+	createGame();
 }
 
 function updateSettingsValues(){
@@ -287,5 +288,193 @@ function updateSettingsValues(){
 	$("#twentyFivePointsColorPicker").val("#00FF08");
 	$("#gameTimeInput").val("60");
 	$("#monstersPicker").val("60");
+}
+
+function createGame(){
+	generateBoard();
+}
+
+function generateBoard(){
+	// init board
+	for(let i=0;i<board.length;i++){
+		board[i]=new Array(10);
+		for(let j=0;j<board[i].length;j++){
+			board[i][j]=1;
+		}
+	}
+	let randomStartRow=Math.floor(Math.random()*board.length);
+	let randomStartColumn=Math.floor(Math.random()*board[0].length);
+	board[randomStartRow][randomStartColumn]=0;
+	let numberOfFreeCells=1;
+	let stack=[[randomStartRow,randomStartColumn]];
+	while(stack.length!=0){
+		let position=stack.pop();
+		let currentRow=position[0];
+		let currentColumn=position[1];
+		let directions=createDirections();
+		(function(){
+		for(let i=0;i<directions.length;i++){
+			switch (directions[i]) {
+				case 1://up
+					if(currentRow-2>-1 && board[currentRow-2][currentColumn]==1){
+						board[currentRow-1][currentColumn]=0;
+						board[currentRow-2][currentColumn]=0;
+						numberOfFreeCells+=2;
+						stack.push([currentRow,currentColumn]);
+						stack.push([currentRow-2,currentColumn]);
+						return;
+					}
+					break;
+
+				case 2://down
+					if(currentRow+2<board.length && board[currentRow+2][currentColumn]==1){
+						board[currentRow+2][currentColumn]=0;
+						board[currentRow+1][currentColumn]=0;
+						numberOfFreeCells+=2;
+						stack.push([currentRow,currentColumn]);
+						stack.push([currentRow+2,currentColumn]);
+						return;
+					}
+					break;
+
+				case 3://left
+					if(currentColumn-2>-1 && board[currentRow][currentColumn-2]==1){
+						board[currentRow][currentColumn-2]=0;
+						board[currentRow][currentColumn-1]=0;
+						numberOfFreeCells+=2;
+						stack.push([currentRow,currentColumn]);
+						stack.push([currentRow,currentColumn-2]);
+						return;
+					}
+					break;
+
+				case 4://right
+					if(currentColumn+2<board[0].length && board[currentRow][currentColumn+2]==1){
+						board[currentRow][currentColumn+2]=0;
+						board[currentRow][currentColumn+1]=0;
+						numberOfFreeCells+=2;
+						stack.push([currentRow,currentColumn]);
+						stack.push([currentRow,currentColumn+2]);
+						return;
+					}
+					break;
+
+				default:
+					break;
+			}
+		}
+	})();
+	}
+	numberOfFreeCells=setCornersToFree(numberOfFreeCells);
+	if(numberOfFreeCells<ballsNumber){
+		let breaked=false;
+		for(let i=0;i<board.length;i++){
+			for(let j=0;j<board[0].length;j++){
+				if(board[i][j]==1){
+					board[i][j]=0;
+					numberOfFreeCells++;
+				}
+				if(numberOfFreeCells<ballsNumber){
+					breaked=true;
+					break;
+				}
+			}
+			if(breaked){
+				break;
+			}
+		}
+		
+	}
+	setBallsOnBoard();
+	let m=5;
+}
+
+function setBallsOnBoard(){
+	let numberOfFiveBalls=parseInt(ballsNumber*0.6);
+	let numberOfFifteen=parseInt(ballsNumber*0.3);
+	let numberOfTwentyFive=ballsNumber-numberOfFiveBalls-numberOfFifteen;
+	let arrayOfCounters=[numberOfFiveBalls,numberOfFifteen,numberOfTwentyFive];
+	let counter=ballsNumber;
+	(function() {
+		for(let i=0;i<board.length;i++){
+		for(let j=0;j<board[0].length;j++){
+			if(board[i][j]==0){
+				let ball=Math.floor(Math.random()*3);
+				while(arrayOfCounters[ball]==0){
+					ball=Math.floor(Math.random()*3);
+				}
+				switch (ball) {
+					case 0:
+						board[i][j]=5;
+						arrayOfCounters[0]--;
+						counter--;
+						break;
+					case 1:
+						board[i][j]=15;
+						arrayOfCounters[1]--;
+						counter--;
+						break;
+					case 2:
+						board[i][j]=25;
+						arrayOfCounters[2]--;
+						counter--;
+						break;	
+					
+				}
+				if(counter==0){
+					return;
+				}
+			}
+		}
+	}})();
+}
+
+
+
+function setCornersToFree(numberOfFreeCells){
+	if(board[0][0]!=0){
+		numberOfFreeCells++;
+		board[0][0]=0;
+		if(board[1][0]==1 && board[0][1]==1){
+			board[1][0]=0;
+			numberOfFreeCeels++;
+		}
+	}
+	if(board[0][board[0].length-1]!=0){
+		board[0][board[0].length-1]=0;
+		numberOfFreeCells++;
+		if(board[1][board[0].length-1]==1 && board[0][board[0].length-2]==1){
+			board[1][board[0].length-1]=0;
+			numberOfFreeCells++;
+		}
+	}
+	if(board[board.length-1][0]!=0){
+		board[board.length-1][0]=0;
+		numberOfFreeCells++;
+		if(board[board.length-2][0]==1 && board[board.length-1][1]==1){
+			board[board.length-1][1]=0;
+			numberOfFreeCells;
+		}
+	}
+	if(board[board.length-1][board[0].length-1]!=0){
+		board[board.length-1][board[0].length-1]=0;
+		numberOfFreeCells++;
+		if(board[board.length-1][board[0].length-2]==1 && board[board.length-2][board[0].length-1]==1){
+			board[board.length-2][board[0].length-1]=0;
+			numberOfFreeCells++;
+		}
+	}
+	return numberOfFreeCells;
+}
+
+
+
+function createDirections(){
+	let directions=[1,2,3,4];
+	for (let i = directions.length - 1; i > 0; i--) {//shuffle directions
+        const j = Math.floor(Math.random() * (i + 1));
+        [directions[i], directions[j]] = [directions[j], directions[i]];
+    }
+	return directions;
 }
 
