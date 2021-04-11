@@ -1,5 +1,5 @@
 
-let usersDict={"k":["k","","",""]};
+let usersDict={"k":["k", "", "", ""]};
 let currentDisplayedDiv="#welcomeContainer";
 let keys={"Up":"","Down":"","Left":"","Right":""};
 let validSettingsData=true;
@@ -7,6 +7,7 @@ let ballsNumber=0;
 let timeOfGame=0;
 let monstersNumber=0;
 let ballsColors={};
+usersDict["t"] = ["1", "", "", ""]
 
 
 function validateDataAfterRegistretion(){
@@ -47,7 +48,7 @@ function validateDataAfterRegistretion(){
 		return;
 	}
 	let birthDate=$("#birthDate").val();
-	usersDict[userName]=[password,fullName,email,birthDate];
+	usersDict[userName]=[password, fullName, email, birthDate];
 	showSettings();
 }
 
@@ -117,8 +118,7 @@ function validateDetailsAfterLogIn(){
 	}
 
 	if (password == usersDict[userName][0]){
-		document.getElementById("demo").innerHTML = "Tomerrrr";
-		//start game here TODO
+		showSettings();
 	}
 	else{
 		alert("User name or password are incorrect");
