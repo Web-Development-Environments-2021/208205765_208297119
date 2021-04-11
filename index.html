@@ -21,19 +21,18 @@
 			<a onclick="logIn()" >Log In</a>
 			<a onclick="settingsScreen()" >Settings</a>
 			<a onclick="aboutScreen()" >About</a>
+			<a onclick="clean()" >Clean</a>
 
 		</div>
-	
-			
 			<div id="welcomeContainer">
-				<img src="Img/pacman logo black background.jpg" style="height: 350px; width: 550px; margin-left: 25%; margin-right: 25%;">
+				<img src="Img/pacman logo white background.png" style="height: 350px; width: 550px; margin-left: 25%; margin-right: 25%;">
 				<div id="buttonsContainer">
 					<button id="registerButton" class="welcomeButtons" onclick="register()">Register</button>
 					<button id="logInButton" class="welcomeButtons" style="display: inline-flex; align-items: flex-end;" onclick="logIn()">Log In</button>
 				</div>
 			</div>
 
-			<div id="registerDiv">
+			<div id="registerDiv" class="forems">
 				<u><label style="font-weight: bold; font-style: italic;">Please enter your details:</label></u>
 				<form  onsubmit="return false;" >
 					<table>
@@ -150,6 +149,23 @@
 			</div>
 			
 		</div>
+			<div id="logInDiv" class="forems">
+				<u><label style="font-weight: bold; font-style: italic;">Please enter your details:</label></u>
+				<form  onsubmit="return false;" >
+					<table>
+						<tr>
+							<td><label for="LIuserName">User Name:</label></td>
+							<td><input type="text" id="LIuserName" name="LIuserName" placeholder="user name"/></td>
+						</tr>
+						<tr>
+							<td><label for="LIpassword">Password:</label>	</td>
+							<td><input type="password" id="LIpassword" name="LIpassword" placeholder="password"></td>
+						</tr>				
+						<tr><td><button type="submit" id="LIsubmitButton" onclick="validateDetailsAfterLogIn()" >submit</button></td></tr>				
+						<p id="demo"></p>
+				</table>
+				</form>
+			</div>
 			<footer style="bottom:0; background-color: chocolate;">
 				<table style="font-weight: bolder;">
 					<tr>
@@ -162,7 +178,7 @@
 					</tr>
 					<tr>
 						<td>Contact information:</td>
-						<td><a href="mailto:ronny54@gmail.com">ronny5423@gmail.com</a></td>
+						<td><a href="mailto:ronny54@gmail.com">ronny5423@gmail.com</a>, <a href="mailto:tomeraizikovich@gmail.com">tomeraizikovich@gmail.com</a></td>
 					</tr>
 				</table>
 			</footer>

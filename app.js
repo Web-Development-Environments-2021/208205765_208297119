@@ -8,6 +8,7 @@ let timeOfGame=0;
 let monstersNumber=0;
 let ballsColors={};
 
+
 function validateDataAfterRegistretion(){
 	let userName=$('#userName').val();
 	if(userName==""){
@@ -94,8 +95,43 @@ function checkFullName(fullName){
 	return true;
 }
 
+function validateDetailsAfterLogIn(){
+	let userName=$('#LIuserName').val();
+	if(userName==""){
+		alert("Empty userName!");
+		return;
+	}
+	if(userName=="k"){
+		return;
+	}
+
+	let password=$("#LIpassword").val();
+	if(password==""){
+		alert("Please fill the password field");
+		return;
+	}
+
+	if (!(userName in usersDict)){
+		alert("This user name dosent exist at the system");
+		return;
+	}
+
+	if (password == usersDict[userName][0]){
+		document.getElementById("demo").innerHTML = "Tomerrrr";
+		//start game here TODO
+	}
+	else{
+		alert("User name or password are incorrect");
+		return;
+	}
+}
+
 function register(){
 	switchDivs("#registerDiv","block");	
+}
+
+function logIn(){
+	switchDivs("#logInDiv","block");
 }
 
 function showWelcomeScreen(){
