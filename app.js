@@ -8,7 +8,40 @@ let timeOfGame=0;
 let monstersNumber=0;
 let ballsColors={};
 let board=new Array(15);
+let direction = "right";
+let intervalTimer;
+let angle = 0;
+let swicthAngle = -1;
 
+function startGame(){
+	intervalTimer = setInterval(draw, 15); // Execute as fast as possible
+}
+
+// terminate interval timer
+function stopTimer()
+{  
+   	window.clearInterval( intervalTimer );
+} 
+
+function draw(){
+	let c = document.getElementById("myCanvas");
+	let ctx = c.getContext("2d");
+	drawMap(ctx);
+	direction = "right";
+	drawPacman(ctx, 870, 25);
+	direction = "left";
+	drawPacman(ctx, 30, 25);
+	direction = "up";
+	drawPacman(ctx, 870, 425);
+	direction = "down";
+	drawPacman(ctx, 30, 425);
+
+	if (angle > 0.188 || angle < 0.0001)
+	{
+		swicthAngle = -1 * swicthAngle;
+	}
+	angle = swicthAngle * 0.02 + angle;
+}
 
 
 function validateDataAfterRegistretion(){
@@ -396,10 +429,9 @@ function generateBoard(){
 		
 	}
 	setBallsOnBoard();
-	$("#settingsButton").css("display","none");
-	$("#randomButton").css("display","none");
-	drowMap();
-	}
+	startGame();
+	drawMap();
+}
 
 function setBallsOnBoard(){
 	let numberOfFiveBalls=parseInt(ballsNumber*0.6);
@@ -440,7 +472,6 @@ function setBallsOnBoard(){
 		}
 	}})();
 }
-
 
 
 function setCornersToFree(numberOfFreeCells){
@@ -490,9 +521,7 @@ function createDirections(){
 	return directions;
 }
 
-function drowMap(){
-	let c = document.getElementById("myCanvas");
-	let ctx = c.getContext("2d");
+function drawMap(ctx){
 	let sizeX = 900 / board.length;
 	let sizeY = 450 / board[0].length;
 
@@ -518,5 +547,121 @@ function drowMap(){
 			}			
 					
 		}
+	}	
+}
+
+function drawPacman(ctx, x, y){
+	switch (direction) {
+		case "right":
+			// An arc with an opening at the right for the mouth
+			ctx.beginPath();
+			ctx.arc(x, y, 20, (0.2-angle) * Math.PI, (1.8+angle) * Math.PI, false);
+
+			// The mouth
+			// A line from the end of the arc to the centre
+			ctx.lineTo(x, y);
+
+			// A line from the centre of the arc to the start
+			ctx.closePath();
+
+			// Fill the pacman shape with yellow
+			ctx.fillStyle = "yellow";
+			ctx.fill();
+
+			// Draw the black outline (optional)
+			ctx.stroke();
+
+			// Draw the eye
+			ctx.beginPath();
+			ctx.arc(x, y-10, 4, 0, 2 * Math.PI, false);
+			ctx.fillStyle = "rgb(0, 0, 0)";
+			ctx.fill();
+			break;
+		
+		case "left":
+			// An arc with an opening at the right for the mouth
+			ctx.beginPath();
+			ctx.arc(x, y, 20, (1.2-angle) * Math.PI, (0.8+angle) * Math.PI, false);
+
+			// The mouth
+			// A line from the end of the arc to the centre
+			ctx.lineTo(x, y);
+
+			// A line from the centre of the arc to the start
+			ctx.closePath();
+
+			// Fill the pacman shape with yellow
+			ctx.fillStyle = "yellow";
+			ctx.fill();
+
+			// Draw the black outline (optional)
+			ctx.stroke();
+
+			// Draw the eye
+			ctx.beginPath();
+			ctx.arc(x, y-10, 4, 0, 2 * Math.PI, false);
+			ctx.fillStyle = "rgb(0, 0, 0)";
+			ctx.fill();
+			break;
+
+		case "up":
+				// An arc with an opening at the right for the mouth
+				ctx.beginPath();
+				ctx.arc(x, y, 20, (1.7-angle) * Math.PI, (1.3+angle) * Math.PI, false);
+	
+				// The mouth
+				// A line from the end of the arc to the centre
+				ctx.lineTo(x, y);
+	
+				// A line from the centre of the arc to the start
+				ctx.closePath();
+	
+				// Fill the pacman shape with yellow
+				ctx.fillStyle = "yellow";
+				ctx.fill();
+	
+				// Draw the black outline (optional)
+				ctx.stroke();
+	
+				// Draw the eye
+				ctx.beginPath();
+				ctx.arc(x+10, y, 4, 0, 2 * Math.PI, false);
+				ctx.fillStyle = "rgb(0, 0, 0)";
+				ctx.fill();
+				break;
+			
+		case "down":
+				// An arc with an opening at the right for the mouth
+				ctx.beginPath();
+				ctx.arc(x, y, 20, (0.7-angle) * Math.PI, (0.3+angle) * Math.PI, false);
+	
+				// The mouth
+				// A line from the end of the arc to the centre
+				ctx.lineTo(x, y);
+	
+				// A line from the centre of the arc to the start
+				ctx.closePath();
+	
+				// Fill the pacman shape with yellow
+				ctx.fillStyle = "yellow";
+				ctx.fill();
+	
+				// Draw the black outline (optional)
+				ctx.stroke();
+	
+				// Draw the eye
+				ctx.beginPath();
+				ctx.arc(x-10, y, 4, 0, 2 * Math.PI, false);
+				ctx.fillStyle = "rgb(0, 0, 0)";
+				ctx.fill();
+				break;
+
+		default:
+			break;
 	}
+}
+
+function toDelete(){
+	showSettings();
+	generateRandomSettings();
 }
