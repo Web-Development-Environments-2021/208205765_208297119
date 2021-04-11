@@ -125,10 +125,12 @@ function validateDetailsAfterLogIn(){
 }
 
 function register(){
+	document.getElementById("registerForm").reset();
 	switchDivs("#registerDiv","block");	
 }
 
 function logIn(){
+	document.getElementById("logInForm").reset();
 	switchDivs("#logInDiv","block");
 }
 
@@ -137,11 +139,13 @@ function showWelcomeScreen(){
 }
 
 function showSettings(){
-	$("#gameAndSettingsDiv").css("display","flex");
+	document.getElementById("settingsForm").reset();
+	switchDivs("#gameAndSettingsDiv","flex");
 	$("#settingsDiv").css("display","block");
-	$(currentDisplayedDiv).css("display","none");
-	currentDisplayedDiv="#settingsDiv";
-}
+	$("#gameDiv").css("display","none");
+	$("#settingsButton").css("display","block");
+	$("#randomButton").css("display","block");
+	}
 
 /**
  * This method switch between the current screen and new screen
@@ -265,26 +269,35 @@ function generateRandomSettings(){
 	keys["Down"]="ArrowDown";
 	keys["Left"]="ArrowLeft";
 	keys["Right"]="ArrowRight";
-	timeOfGame=60;
-	monstersNumber=3;
-	ballsNumber=60;
-	ballsColors["5"]="red";
-	ballsColors["15"]="blue";
-	ballsColors["25"]="green";
+	timeOfGame=Math.floor(Math.random()*120)+60;
+	monstersNumber=Math.floor(Math.random()*4)+1;
+	ballsNumber=Math.floor(Math.random()*40)+50;
+	ballsColors["5"]=getRandomColor();
+	ballsColors["15"]=getRandomColor();
+	ballsColors["25"]=getRandomColor();
 	updateSettingsValues();
 	}
+
+	function getRandomColor() {
+		let letters = '0123456789ABCDEF';
+		let color = '#';
+		for (let i = 0; i < 6; i++) {
+		  color += letters[Math.floor(Math.random() * 16)];
+		}
+		return color;
+	  }
 
 function updateSettingsValues(){
 	$("#keyUp").val("ArrowUp");
 	$("#keyDown").val("ArrowDown");
 	$("#keyLeft").val("ArrowLeft");
 	$("#keyRight").val("ArrowRight");
-	$("#numberOfBalls").val("60");
-	$("#fivePointsColorPicker").val("#FF0000");
-	$("#fifteenPointsColorPicker").val("#0040FF");
-	$("#twentyFivePointsColorPicker").val("#00FF08");
-	$("#gameTimeInput").val("60");
-	$("#monstersPicker").val("3");
+	$("#numberOfBalls").val(ballsNumber.toString());
+	$("#fivePointsColorPicker").val(ballsColors["5"]);
+	$("#fifteenPointsColorPicker").val(ballsColors["15"]);
+	$("#twentyFivePointsColorPicker").val(ballsColors["25"]);
+	$("#gameTimeInput").val(timeOfGame.toString());
+	$("#monstersPicker").val(monstersNumber.toString());
 }
 
 function createGame(){
@@ -383,6 +396,8 @@ function generateBoard(){
 		
 	}
 	setBallsOnBoard();
+	$("#settingsButton").css("display","none");
+	$("#randomButton").css("display","none");
 	drowMap();
 	}
 
