@@ -272,9 +272,7 @@ function generateRandomSettings(){
 	ballsColors["15"]="blue";
 	ballsColors["25"]="green";
 	updateSettingsValues();
-	$("#gameDiv").css("display","flex");
-	createGame();
-}
+	}
 
 function updateSettingsValues(){
 	$("#keyUp").val("ArrowUp");
@@ -373,7 +371,7 @@ function generateBoard(){
 					board[i][j]=0;
 					numberOfFreeCells++;
 				}
-				if(numberOfFreeCells<ballsNumber){
+				if(numberOfFreeCells==ballsNumber){
 					breaked=true;
 					break;
 				}
@@ -386,9 +384,7 @@ function generateBoard(){
 	}
 	setBallsOnBoard();
 	drowMap();
-	let m=5;
-
-}
+	}
 
 function setBallsOnBoard(){
 	let numberOfFiveBalls=parseInt(ballsNumber*0.6);
