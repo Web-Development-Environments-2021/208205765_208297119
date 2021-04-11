@@ -7,8 +7,7 @@ let ballsNumber=0;
 let timeOfGame=0;
 let monstersNumber=0;
 let ballsColors={};
-usersDict["t"] = ["1", "", "", ""]// to delete!!!!!!!!!!!!!!!!!!!!!!!!!!!
-let board=new Array(14);
+let board=new Array(15);
 
 
 
@@ -270,7 +269,7 @@ function generateRandomSettings(){
 	monstersNumber=3;
 	ballsNumber=60;
 	ballsColors["5"]="red";
-	ballsColors["15"]="blue;"
+	ballsColors["15"]="blue";
 	ballsColors["25"]="green";
 	updateSettingsValues();
 	$("#gameDiv").css("display","flex");
@@ -287,7 +286,7 @@ function updateSettingsValues(){
 	$("#fifteenPointsColorPicker").val("#0040FF");
 	$("#twentyFivePointsColorPicker").val("#00FF08");
 	$("#gameTimeInput").val("60");
-	$("#monstersPicker").val("60");
+	$("#monstersPicker").val("3");
 }
 
 function createGame(){
@@ -386,7 +385,9 @@ function generateBoard(){
 		
 	}
 	setBallsOnBoard();
+	drowMap();
 	let m=5;
+
 }
 
 function setBallsOnBoard(){
@@ -437,7 +438,7 @@ function setCornersToFree(numberOfFreeCells){
 		board[0][0]=0;
 		if(board[1][0]==1 && board[0][1]==1){
 			board[1][0]=0;
-			numberOfFreeCeels++;
+			numberOfFreeCells++;
 		}
 	}
 	if(board[0][board[0].length-1]!=0){
@@ -478,3 +479,33 @@ function createDirections(){
 	return directions;
 }
 
+function drowMap(){
+	let c = document.getElementById("myCanvas");
+	let ctx = c.getContext("2d");
+	let sizeX = 900 / board.length;
+	let sizeY = 450 / board[0].length;
+
+	ctx.clearRect(0, 0, 900, 450);
+	for(let x=0; x<board.length; x+=1){
+		for(let y=0; y<board[0].length; y+=1){
+			if (board[x][y] == 1){
+				ctx.fillStyle = "black";
+				ctx.fillRect(x*sizeX, y*sizeY, sizeX, sizeY);
+			}
+			else{
+				if (board[x][y] == 0){
+					ctx.fillStyle = "white";
+					ctx.fillRect(x*sizeX, y*sizeY, sizeX, sizeY);
+				}				
+				else{
+					// draw candy
+					ctx.beginPath();
+					ctx.fillStyle = ballsColors[board[x][y]];
+					ctx.arc(x*sizeX + sizeX/2, y*sizeY + sizeY/2, 7.5, 0, Math.PI*2);
+					ctx.fill();
+				}
+			}			
+					
+		}
+	}
+}
