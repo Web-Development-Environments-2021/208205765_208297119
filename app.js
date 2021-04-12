@@ -28,6 +28,8 @@ let sizeX = 900 / board.length;
 let sizeY;
 let ghostsPositions=[];
 let ghostsArr=[];
+let countCandy = 0;
+let radiusCandys = {5:4, 15:8, 25:13};
 
 $(document).ready(function(){
 	ctx=document.getElementById("myCanvas").getContext("2d");
@@ -545,7 +547,10 @@ function main(){
 	drawMap();
 	drawPacman();
 	drawCherry();
-	contactPacmanCherry();
+	if (pacmanContact(cherryX, cherryY, 50, 40)){
+		initCherry();
+		increaseScore(50);
+	}
 	drawGhosts();
 	changeGhostsLocations();
 
@@ -568,8 +573,6 @@ function drawCherry(){
 }
 
 function drawMap(){
-	let R = 4;
-
 	ctx.clearRect(0, 0, 900, 450);
 	for(let x=0; x<board.length; x+=1){
 		for(let y=0; y<board[0].length; y+=1){
@@ -581,16 +584,10 @@ function drawMap(){
 				ctx.fillStyle = "white";
 				ctx.fillRect(x*sizeX, y*sizeY, sizeX, sizeY);
 				if (board[x][y] != 0){
-					if (board[x][y] == 5)
-						R = 4;
-					if (board[x][y] == 15)
-						R = 8;
-					if (board[x][y] == 25)
-						R = 13;
 					// draw candy
 					ctx.beginPath();
 					ctx.fillStyle = ballsColors[board[x][y]];
-					ctx.arc(x*sizeX + sizeX/2, y*sizeY + sizeY/2, R, 0, Math.PI*2);
+					ctx.arc(x*sizeX + sizeX/2, y*sizeY + sizeY/2, radiusCandys[board[x][y]], 0, Math.PI*2);
 					ctx.fill();					
 				}
 			}				
@@ -652,24 +649,28 @@ document.addEventListener('keydown', function (event) {
 		pacDirection = "up";
 		if (!(checkWall(pacX-pacRadius, pacY-pacSpeed-pacRadius) || checkWall(pacX+pacRadius, pacY-pacSpeed-pacRadius))){
 			pacY -= pacSpeed;
+			touchCandy();
 		}
 	}
 	if (event.key === keys["Down"]) {
 		pacDirection = "down";
 		if (!(checkWall(pacX-pacRadius, pacY+pacSpeed+pacRadius) || checkWall(pacX+pacRadius, pacY+pacSpeed+pacRadius))){
 			pacY += pacSpeed;
+			touchCandy();
 		}
 	}
 	if (event.key === keys["Left"]) {
 		pacDirection = "left";
 		if (!(checkWall(pacX-pacSpeed-pacRadius, pacY-pacRadius) || checkWall(pacX-pacSpeed-pacRadius, pacY+pacRadius))){
 			pacX -= pacSpeed;
+			touchCandy();
 		}
 	}
 	if (event.key === keys["Right"]) {
 		pacDirection = "right";
 		if (!(checkWall(pacX+pacSpeed+pacRadius, pacY-pacRadius) || checkWall(pacX+pacSpeed+pacRadius, pacY+pacRadius))){
-			pacX += pacSpeed;			
+			pacX += pacSpeed;
+			touchCandy();
 		}
 	}	
   });
@@ -684,35 +685,37 @@ function checkWall(x, y){
 	return false;
 }
 
-function contactPacmanCherry(){
-	if (pacX - pacRadius < cherryX && cherryX < pacX + pacRadius)
-		if (pacY - pacRadius < cherryY && cherryY < pacY + pacRadius){
-			initCherry();
-			score += 50;
-			document.getElementById("scoreLabel").innerHTML = score;
-			return;
-		}
-	if (pacX - pacRadius < cherryX + 50 && cherryX + 50< pacX + pacRadius)
-		if (pacY - pacRadius < cherryY && cherryY < pacY + pacRadius){
-			initCherry();
-			score += 50;
-			document.getElementById("scoreLabel").innerHTML = score;
-			return;
-		}
-	if (pacX - pacRadius < cherryX && cherryX < pacX + pacRadius)
-		if (pacY - pacRadius < cherryY +40 && cherryY + 40 < pacY + pacRadius){
-			initCherry();
-			score += 50;
-			document.getElementById("scoreLabel").innerHTML = score;
-			return;
-		}
-	if (pacX - pacRadius < cherryX + 50 && cherryX + 50 < pacX + pacRadius)
-		if (pacY - pacRadius < cherryY +40 && cherryY + 40 < pacY + pacRadius){
-			initCherry();
-			score += 50;
-			document.getElementById("scoreLabel").innerHTML = score;
-			return;
-		}
+function touchCandy(){
+	let i = Math.floor(pacX / sizeX);
+	let j = Math.floor(pacY / sizeY);
+	if (board[i][j] == 0 || board[i][j] == 1)
+		return;
+	
+	if (pacmanContact(i*sizeX + sizeX/2, j*sizeY + sizeY/2, radiusCandys[board[i][j]]*2, radiusCandys[board[i][j]]*2)){
+		increaseScore(board[i][j]);
+		board[i][j] = 0;
+		countCandy++;
+	}
+}
+
+function pacmanContact(x, y, width, heigh){
+	if (pacX - pacRadius < x && x < pacX + pacRadius)
+		if (pacY - pacRadius < y && y < pacY + pacRadius)
+			return true;
+
+	if (pacX - pacRadius < x + width && x + width < pacX + pacRadius)
+		if (pacY - pacRadius < y && y < pacY + pacRadius)
+			return true;
+		
+	if (pacX - pacRadius < x && x < pacX + pacRadius)
+		if (pacY - pacRadius < y + heigh && y + heigh < pacY + pacRadius)
+			return true;
+		
+	if (pacX - pacRadius < x + width && x + width < pacX + pacRadius)
+		if (pacY - pacRadius < y + heigh && y + heigh < pacY + pacRadius)
+			return true;
+		
+	return false;
 }
 
 function chooseRandomEmptyPoint(){
@@ -879,6 +882,11 @@ function decideIfGoInThisDirection(originalManhatanDistance,ghostX,ghostY){
 		}
 	}
 	return false;
+}
+
+function increaseScore(s){
+	score += s;
+	document.getElementById("scoreLabel").innerHTML = score;
 }
 
 function toDelete(){
