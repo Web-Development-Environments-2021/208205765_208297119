@@ -1,4 +1,3 @@
-
 let usersDict={"k":["k", "", "", ""]};
 let currentDisplayedDiv="#welcomeContainer";
 let keys={"Up":"","Down":"","Left":"","Right":""};
@@ -527,7 +526,7 @@ function startGame(){
 	initCherry();
 	initGhostPositions();
 	initGhostsArr();
-	intervalTimer = setInterval(main, 10); // Execute as fast as possible
+	intervalTimer = setInterval(main, 25); // Execute as fast as possible
 	gameIntervals.push(intervalTimer);
 	setGameTimer();
 	
