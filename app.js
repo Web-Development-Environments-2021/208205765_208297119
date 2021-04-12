@@ -8,10 +8,11 @@ let timeOfGame=0;
 let monstersNumber=0;
 let ballsColors={};
 let board=new Array(15);
-let pacDirection = "right";
 let intervalTimer;
+let score = 0;
 let angle = 0;
 let swicthAngle = -1;
+let pacDirection = "right";
 let pacSpeed = 5;
 let pacX = 0;
 let pacY = 0;
@@ -520,9 +521,11 @@ function createDirections(){
 function startGame(){
 	$("#userNameToShow").html(loggedUser);
 	generateBoard();
-	initPosition();
+	chooseRandomEmptyPoint();
+	initCherry();
+	initGhostPositions();
 	initGhostsArr();
-	intervalTimer = setInterval(main, 30); // Execute as fast as possible
+	intervalTimer = setInterval(main, 10); // Execute as fast as possible
 	gameIntervals.push(intervalTimer);
 	setGameTimer();
 	
@@ -535,17 +538,18 @@ function stopTimer()
 } 
 
 function main(){
+	if (angle > 0.188 || angle < 0.0001)
+		swicthAngle *= -1;
+	angle = swicthAngle * 0.02 + angle;
+
 	drawMap();
 	drawPacman();
 	drawCherry();
+	contactPacmanCherry();
 	drawGhosts();
 	changeGhostsLocations();
 
-	if (angle > 0.188 || angle < 0.0001)
-	{
-		swicthAngle *= -1;
-	}
-	angle = swicthAngle * 0.02 + angle;
+	
 }
 
 function drawCherry(){
@@ -605,12 +609,12 @@ function drawPacman(){
 			break;
 
 		case "up":
-				drawPacmanInDirection(1.7,1.3,pacX+10,pacY);
-				break;
+			drawPacmanInDirection(1.7,1.3,pacX+10,pacY);
+			break;
 			
 		case "down":
-				drawPacmanInDirection(0.7,0.3,pacX-10,pacY);
-				break;
+			drawPacmanInDirection(0.7,0.3,pacX-10,pacY);
+			break;
 
 		default:
 			break;
@@ -646,24 +650,28 @@ function drawPacmanInDirection(startAngle,endAngle,eyeX,eyeY){
 document.addEventListener('keydown', function (event) {
 	if (event.key === keys["Up"]) {
 		pacDirection = "up";
-		if (!(checkWall(pacX-pacRadius, pacY-pacSpeed-pacRadius) || checkWall(pacX+pacRadius, pacY-pacSpeed-pacRadius)))
+		if (!(checkWall(pacX-pacRadius, pacY-pacSpeed-pacRadius) || checkWall(pacX+pacRadius, pacY-pacSpeed-pacRadius))){
 			pacY -= pacSpeed;
+		}
 	}
 	if (event.key === keys["Down"]) {
 		pacDirection = "down";
-		if (!(checkWall(pacX-pacRadius, pacY+pacSpeed+pacRadius) || checkWall(pacX+pacRadius, pacY+pacSpeed+pacRadius)))
-			pacY += pacSpeed;		
+		if (!(checkWall(pacX-pacRadius, pacY+pacSpeed+pacRadius) || checkWall(pacX+pacRadius, pacY+pacSpeed+pacRadius))){
+			pacY += pacSpeed;
+		}
 	}
 	if (event.key === keys["Left"]) {
 		pacDirection = "left";
-		if (!(checkWall(pacX-pacSpeed-pacRadius, pacY-pacRadius) || checkWall(pacX-pacSpeed-pacRadius, pacY+pacRadius)))
-			pacX -= pacSpeed;		
+		if (!(checkWall(pacX-pacSpeed-pacRadius, pacY-pacRadius) || checkWall(pacX-pacSpeed-pacRadius, pacY+pacRadius))){
+			pacX -= pacSpeed;
+		}
 	}
 	if (event.key === keys["Right"]) {
 		pacDirection = "right";
-		if (!(checkWall(pacX+pacSpeed+pacRadius, pacY-pacRadius) || checkWall(pacX+pacSpeed+pacRadius, pacY+pacRadius)))
-			pacX += pacSpeed;		
-	}
+		if (!(checkWall(pacX+pacSpeed+pacRadius, pacY-pacRadius) || checkWall(pacX+pacSpeed+pacRadius, pacY+pacRadius))){
+			pacX += pacSpeed;			
+		}
+	}	
   });
 
 function checkWall(x, y){
@@ -676,8 +684,39 @@ function checkWall(x, y){
 	return false;
 }
 
-function initPosition(){
-	//choose random empty point for pacman
+function contactPacmanCherry(){
+	if (pacX - pacRadius < cherryX && cherryX < pacX + pacRadius)
+		if (pacY - pacRadius < cherryY && cherryY < pacY + pacRadius){
+			initCherry();
+			score += 50;
+			document.getElementById("scoreLabel").innerHTML = score;
+			return;
+		}
+	if (pacX - pacRadius < cherryX + 50 && cherryX + 50< pacX + pacRadius)
+		if (pacY - pacRadius < cherryY && cherryY < pacY + pacRadius){
+			initCherry();
+			score += 50;
+			document.getElementById("scoreLabel").innerHTML = score;
+			return;
+		}
+	if (pacX - pacRadius < cherryX && cherryX < pacX + pacRadius)
+		if (pacY - pacRadius < cherryY +40 && cherryY + 40 < pacY + pacRadius){
+			initCherry();
+			score += 50;
+			document.getElementById("scoreLabel").innerHTML = score;
+			return;
+		}
+	if (pacX - pacRadius < cherryX + 50 && cherryX + 50 < pacX + pacRadius)
+		if (pacY - pacRadius < cherryY +40 && cherryY + 40 < pacY + pacRadius){
+			initCherry();
+			score += 50;
+			document.getElementById("scoreLabel").innerHTML = score;
+			return;
+		}
+}
+
+function chooseRandomEmptyPoint(){
+	//choose random empty point for pacman at start of game
 	let found = false;
 	let position = [-1, -1];
 	while (!found){
@@ -690,10 +729,13 @@ function initPosition(){
 	}
 	pacX = position[0] * 60 + 30;
 	pacY = position[1] * 45 + 22;
+}
 
+function initCherry(){
 	//choose random point and direction start for the cherry
 	cherryX = Math.floor(Math.random() * 800) + 50;
 	cherryY = Math.floor(Math.random() * 400) + 25;
+
 	
 	let cherrySpeed = 5;
 	if (Math.random() > 0.5)
@@ -705,8 +747,6 @@ function initPosition(){
 		cherrySpeedY = cherrySpeed;
 	else
 		cherrySpeedY = -1 * cherrySpeed;
-	
-		initGhostPositions();
 }
 
 function initGhostPositions(){
