@@ -14,6 +14,13 @@ let angle = 0;
 let swicthAngle = -1;
 let pacX;
 let pacY;
+let ctx;
+let loggedUser;
+let gameIntervals=[];
+
+$(document).ready(function(){
+	ctx=document.getElementById("myCanvas").getContext("2d");
+});
 
 function validateDataAfterRegistretion(){
 	let userName=$('#userName').val();
@@ -54,6 +61,7 @@ function validateDataAfterRegistretion(){
 	}
 	let birthDate=$("#birthDate").val();
 	usersDict[userName]=[password, fullName, email, birthDate];
+	loggedUser=userName;
 	showSettings();
 }
 
@@ -120,6 +128,7 @@ function validateDetailsAfterLogIn(){
 	}
 
 	if (password == usersDict[userName][0]){
+		loggedUser=userName;
 		showSettings();
 	}
 	else{
@@ -157,9 +166,19 @@ function showSettings(){
  * @param {string} display  a string value of how display the div(flex,inline etc...)
  */
 function switchDivs(newDivToSwitchTo,display){
+	if(currentDisplayedDiv=="#gameAndSettingsDiv"){
+		stopGamesIntervals();
+	}
 	$(currentDisplayedDiv).css("display","none");
 	currentDisplayedDiv=newDivToSwitchTo;
 	$(newDivToSwitchTo).css("display",display);
+}
+
+function stopGamesIntervals(){
+	gameIntervals.forEach(function(item){
+		clearInterval(item);
+	});
+	gameIntervals=[];
 }
 
 /**
@@ -202,8 +221,8 @@ function validateSettings(){
 		ballsColors["5"]=fivePointsBallColor;
 		ballsColors["15"]=fifteenPointsColorPicker;
 		ballsColors["25"]=twentyFivePointsColorPicker;
+		startGame();
 		$("#gameDiv").css("display","flex");
-		createGame();
 	}
 }
 
@@ -211,7 +230,7 @@ function checkNumericValuesSettings(numberOfBalls,gameTime,numberOfMonsters){
 	if(checkSingleNumericValue(numberOfBalls,50,90,"#errorBallsNumber","Number of balls must be a number","Number of balls must be between 50 to 90")){
 		ballsNumber=parseInt(numberOfBalls);
 	}
-	if(checkSingleNumericValue(gameTime,60,0,"#gameTimeError","Game time must be at least 60 seconds!","")){
+	if(checkSingleNumericValue(gameTime,60,0,"#gameTimeError","","Game time must be at least 60 seconds!")){
 		timeOfGame=parseInt(gameTime);
 	}
 	if(checkSingleNumericValue(numberOfMonsters,1,4,"#monstersNumberError","Monsters number must be a number","Monsters number must be between 1 to 4")){
@@ -488,9 +507,12 @@ function createDirections(){
 }
 
 function startGame(){
+	$("#userNameToShow").html(loggedUser);
 	generateBoard();
 	chooseRandomEmptyPoint();
 	intervalTimer = setInterval(draw, 30); // Execute as fast as possible
+	gameIntervals.push(intervalTimer);
+	setGameTimer();
 }
 
 // terminate interval timer
@@ -500,9 +522,8 @@ function stopTimer()
 } 
 
 function draw(){
-	let ctx = document.getElementById("myCanvas").getContext("2d");
-	drawMap(ctx);
-	drawPacman(ctx);
+	drawMap();
+	drawPacman();
 	/*direction = "right";
 	drawPacman(ctx, 870, 25);
 	direction = "left";
@@ -519,7 +540,7 @@ function draw(){
 	angle = swicthAngle * 0.02 + angle;
 }
 
-function drawMap(ctx){
+function drawMap(){
 	let sizeX = 900 / board.length;
 	let sizeY = 450 / board[0].length;
 	let R = 4;
@@ -552,115 +573,53 @@ function drawMap(ctx){
 	}
 }
 
-function drawPacman(ctx){
+function drawPacman(){
 	switch (direction) {
 		case "right":
-			// An arc with an opening at the right for the mouth
-			ctx.beginPath();
-			ctx.arc(pacX, pacY, 20, (0.2-angle) * Math.PI, (1.8+angle) * Math.PI, false);
-
-			// The mouth
-			// A line from the end of the arc to the centre
-			ctx.lineTo(pacX, pacY);
-
-			// A line from the centre of the arc to the start
-			ctx.closePath();
-
-			// Fill the pacman shape with yellow
-			ctx.fillStyle = "yellow";
-			ctx.fill();
-
-			// Draw the black outline (optional)
-			ctx.stroke();
-
-			// Draw the eye
-			ctx.beginPath();
-			ctx.arc(pacX, pacY-10, 4, 0, 2 * Math.PI, false);
-			ctx.fillStyle = "rgb(0, 0, 0)";
-			ctx.fill();
+			drawPacmanInDirection(0.2,1.8,pacX,pacY-10);
 			break;
 		
 		case "left":
-			// An arc with an opening at the right for the mouth
-			ctx.beginPath();
-			ctx.arc(pacX, pacY, 20, (1.2-angle) * Math.PI, (0.8+angle) * Math.PI, false);
-
-			// The mouth
-			// A line from the end of the arc to the centre
-			ctx.lineTo(pacX, pacY);
-
-			// A line from the centre of the arc to the start
-			ctx.closePath();
-
-			// Fill the pacman shape with yellow
-			ctx.fillStyle = "yellow";
-			ctx.fill();
-
-			// Draw the black outline (optional)
-			ctx.stroke();
-
-			// Draw the eye
-			ctx.beginPath();
-			ctx.arc(pacX, pacY-10, 4, 0, 2 * Math.PI, false);
-			ctx.fillStyle = "rgb(0, 0, 0)";
-			ctx.fill();
+			drawPacmanInDirection(1.2,0.8,pacX,pacY-10);
 			break;
 
 		case "up":
-				// An arc with an opening at the right for the mouth
-				ctx.beginPath();
-				ctx.arc(pacX, pacY, 20, (1.7-angle) * Math.PI, (1.3+angle) * Math.PI, false);
-	
-				// The mouth
-				// A line from the end of the arc to the centre
-				ctx.lineTo(pacX, pacY);
-	
-				// A line from the centre of the arc to the start
-				ctx.closePath();
-	
-				// Fill the pacman shape with yellow
-				ctx.fillStyle = "yellow";
-				ctx.fill();
-	
-				// Draw the black outline (optional)
-				ctx.stroke();
-	
-				// Draw the eye
-				ctx.beginPath();
-				ctx.arc(pacX+10, pacY, 4, 0, 2 * Math.PI, false);
-				ctx.fillStyle = "rgb(0, 0, 0)";
-				ctx.fill();
+				drawPacmanInDirection(1.7,1.3,pacX+10,pacY);
 				break;
 			
 		case "down":
-				// An arc with an opening at the right for the mouth
-				ctx.beginPath();
-				ctx.arc(pacX, pacY, 20, (0.7-angle) * Math.PI, (0.3+angle) * Math.PI, false);
-	
-				// The mouth
-				// A line from the end of the arc to the centre
-				ctx.lineTo(pacX, pacY);
-	
-				// A line from the centre of the arc to the start
-				ctx.closePath();
-	
-				// Fill the pacman shape with yellow
-				ctx.fillStyle = "yellow";
-				ctx.fill();
-	
-				// Draw the black outline (optional)
-				ctx.stroke();
-	
-				// Draw the eye
-				ctx.beginPath();
-				ctx.arc(pacX-10, pacY, 4, 0, 2 * Math.PI, false);
-				ctx.fillStyle = "rgb(0, 0, 0)";
-				ctx.fill();
+				drawPacmanInDirection(0.7,0.3,pacX-10,pacY);
 				break;
 
 		default:
 			break;
 	}
+}
+
+function drawPacmanInDirection(number1,number2,newPacX,newPackY){
+	// An arc with an opening at the right for the mouth
+	ctx.beginPath();
+	ctx.arc(pacX, pacY, 20, (number1-angle) * Math.PI, (number2+angle) * Math.PI, false);
+
+	// The mouth
+	// A line from the end of the arc to the centre
+	ctx.lineTo(pacX, pacY);
+
+	// A line from the centre of the arc to the start
+	ctx.closePath();
+
+	// Fill the pacman shape with yellow
+	ctx.fillStyle = "yellow";
+	ctx.fill();
+
+	// Draw the black outline (optional)
+	ctx.stroke();
+
+	// Draw the eye
+	ctx.beginPath();
+	ctx.arc(newPacX, newPackY, 4, 0, 2 * Math.PI, false);
+	ctx.fillStyle = "rgb(0, 0, 0)";
+	ctx.fill();
 }
 
 function chooseRandomEmptyPoint(){
@@ -674,6 +633,24 @@ function chooseRandomEmptyPoint(){
 	}
 	pacX = position[0] * 60 + 30;
 	pacY = position[1] * 45 + 22;
+}
+
+/**
+ * This function sets the timer for game
+ */
+function setGameTimer(){
+	$("#timeLabel").html(timeOfGame.toString());
+	let timer=setInterval(function(){
+		timeOfGame--;
+		$("#timeLabel").html(timeOfGame.toString());
+		if(timeOfGame>0 && timeOfGame<10){
+			$("#timeLabel").css("color","red");
+		}
+		if(timeOfGame==0){
+			clearInterval(timer);
+		}
+	},1000);
+	gameIntervals.push(timer);
 }
 
 function toDelete(){
