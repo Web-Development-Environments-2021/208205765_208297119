@@ -15,10 +15,14 @@ let swicthAngle = -1;
 let pacSpeed = 5;
 let pacX = 0;
 let pacY = 0;
-let pacRadius = 20;
+let pacRadius = 15;
 let ctx;
 let loggedUser;
 let gameIntervals=[];
+let cherryX = 0;
+let cherryY = 0;
+let cherrySpeedX = 5;
+let cherrySpeedY = 5;
 
 $(document).ready(function(){
 	ctx=document.getElementById("myCanvas").getContext("2d");
@@ -511,8 +515,8 @@ function createDirections(){
 function startGame(){
 	$("#userNameToShow").html(loggedUser);
 	generateBoard();
-	chooseRandomEmptyPoint();
-	intervalTimer = setInterval(draw, 30); // Execute as fast as possible
+	initPosition();
+	intervalTimer = setInterval(main, 30); // Execute as fast as possible
 	gameIntervals.push(intervalTimer);
 	setGameTimer();
 }
@@ -523,15 +527,31 @@ function stopTimer()
    	window.clearInterval( intervalTimer );
 } 
 
-function draw(){
+function main(){
 	drawMap();
 	drawPacman();
+	drawCherry();
 
 	if (angle > 0.188 || angle < 0.0001)
 	{
 		swicthAngle *= -1;
 	}
 	angle = swicthAngle * 0.02 + angle;
+}
+
+function drawCherry(){
+	cherryX += cherrySpeedX;
+	cherryY += cherrySpeedY;
+
+	if (cherryX+50 > 900 || cherryX < 0)
+		cherrySpeedX *= -1;
+	
+	if (cherryY+40 > 450 || cherryY < 0)
+		cherrySpeedY *= -1;
+
+	let img = new Image();
+	img.src = "Img/cherry.png";
+	ctx.drawImage(img, cherryX, cherryY, 50, 40);
 }
 
 function drawMap(){
@@ -611,7 +631,7 @@ function drawPacmanInDirection(startAngle,endAngle,eyeX,eyeY){
 
 	// Draw the eye
 	ctx.beginPath();
-	ctx.arc(eyeX, eyeY, 4, 0, 2 * Math.PI, false);
+	ctx.arc(eyeX, eyeY, 3, 0, 2 * Math.PI, false);
 	ctx.fillStyle = "rgb(0, 0, 0)";
 	ctx.fill();
 }
@@ -625,8 +645,7 @@ document.addEventListener('keydown', function (event) {
 	if (event.key === keys["Down"]) {
 		pacDirection = "down";
 		if (!(checkWall(pacX-pacRadius, pacY+pacSpeed+pacRadius) || checkWall(pacX+pacRadius, pacY+pacSpeed+pacRadius)))
-			pacY += pacSpeed;
-		
+			pacY += pacSpeed;		
 	}
 	if (event.key === keys["Left"]) {
 		pacDirection = "left";
@@ -641,12 +660,17 @@ document.addEventListener('keydown', function (event) {
   });
 
 function checkWall(x, y){
+	if (x > 899 || x < 0)
+		return true;
+	if (y > 449 || y < 0)
+		return true;
 	if (board[Math.floor(x / 60)][Math.floor(y / 45)] == 1)
 		return true;
 	return false;
 }
 
-function chooseRandomEmptyPoint(){
+function initPosition(){
+	//choose random empty point for pacman
 	let found = false;
 	let position = [-1, -1];
 	while (!found){
@@ -657,6 +681,21 @@ function chooseRandomEmptyPoint(){
 	}
 	pacX = position[0] * 60 + 30;
 	pacY = position[1] * 45 + 22;
+
+	//choose random point and direction start for the cherry
+	cherryX = Math.floor(Math.random() * 800) + 50;
+	cherryY = Math.floor(Math.random() * 400) + 25;
+	
+	let cherrySpeed = 5;
+	if (Math.random() > 0.5)
+		cherrySpeedX = cherrySpeed;
+	else
+		cherrySpeedX = -1 * cherrySpeed;
+
+	if (Math.random() > 0.5)
+		cherrySpeedY = cherrySpeed;
+	else
+		cherrySpeedY = -1 * cherrySpeed;
 }
 
 /**
