@@ -8,10 +8,29 @@ let timeOfGame=0;
 let monstersNumber=0;
 let ballsColors={};
 let board=new Array(15);
+<<<<<<< Updated upstream
 let direction = "right";
+=======
+>>>>>>> Stashed changes
 let intervalTimer;
+let score = 0;
 let angle = 0;
 let swicthAngle = -1;
+<<<<<<< Updated upstream
+=======
+let pacDirection = "right";
+let pacSpeed = 5;
+let pacX = 0;
+let pacY = 0;
+let pacRadius = 15;
+let ctx;
+let loggedUser;
+let gameIntervals=[];
+let cherryX = 0;
+let cherryY = 0;
+let cherrySpeedX = 5;
+let cherrySpeedY = 5;
+>>>>>>> Stashed changes
 
 function startGame(){
 	intervalTimer = setInterval(draw, 15); // Execute as fast as possible
@@ -510,7 +529,54 @@ function createDirections(){
 	return directions;
 }
 
+<<<<<<< Updated upstream
 function drawMap(ctx){
+=======
+function startGame(){
+	$("#userNameToShow").html(loggedUser);
+	generateBoard();
+	chooseRandomEmptyPoint();
+	initCherry();
+	intervalTimer = setInterval(main, 30); // Execute as fast as possible
+	gameIntervals.push(intervalTimer);
+	setGameTimer();
+}
+
+// terminate interval timer
+function stopTimer()
+{  
+   	window.clearInterval( intervalTimer );
+} 
+
+function main(){
+	drawMap();
+	drawPacman();
+	drawCherry();
+
+	if (angle > 0.188 || angle < 0.0001)
+	{
+		swicthAngle *= -1;
+	}
+	angle = swicthAngle * 0.02 + angle;
+}
+
+function drawCherry(){
+	cherryX += cherrySpeedX;
+	cherryY += cherrySpeedY;
+
+	if (cherryX+50 > 900 || cherryX < 0)
+		cherrySpeedX *= -1;
+	
+	if (cherryY+40 > 450 || cherryY < 0)
+		cherrySpeedY *= -1;
+	
+	let img = new Image();
+	img.src = "Img/cherry.png";
+	ctx.drawImage(img, cherryX, cherryY, 50, 40);
+}
+
+function drawMap(){
+>>>>>>> Stashed changes
 	let sizeX = 900 / board.length;
 	let sizeY = 450 / board[0].length;
 
@@ -650,6 +716,157 @@ function drawPacman(ctx, x, y){
 	}
 }
 
+<<<<<<< Updated upstream
+=======
+function drawPacmanInDirection(startAngle,endAngle,eyeX,eyeY){
+	// An arc with an opening at the right for the mouth
+	ctx.beginPath();
+	ctx.arc(pacX, pacY, pacRadius, (startAngle-angle) * Math.PI, (endAngle+angle) * Math.PI, false);
+
+	// The mouth
+	// A line from the end of the arc to the centre
+	ctx.lineTo(pacX, pacY);
+
+	// A line from the centre of the arc to the start
+	ctx.closePath();
+
+	// Fill the pacman shape with yellow
+	ctx.fillStyle = "yellow";
+	ctx.fill();
+
+	// Draw the black outline (optional)
+	ctx.stroke();
+
+	// Draw the eye
+	ctx.beginPath();
+	ctx.arc(eyeX, eyeY, 3, 0, 2 * Math.PI, false);
+	ctx.fillStyle = "rgb(0, 0, 0)";
+	ctx.fill();
+}
+
+document.addEventListener('keydown', function (event) {
+	if (event.key === keys["Up"]) {
+		pacDirection = "up";
+		if (!(checkWall(pacX-pacRadius, pacY-pacSpeed-pacRadius) || checkWall(pacX+pacRadius, pacY-pacSpeed-pacRadius))){
+			pacY -= pacSpeed;
+			contactPacmanCherry();
+		}
+	}
+	if (event.key === keys["Down"]) {
+		pacDirection = "down";
+		if (!(checkWall(pacX-pacRadius, pacY+pacSpeed+pacRadius) || checkWall(pacX+pacRadius, pacY+pacSpeed+pacRadius))){
+			pacY += pacSpeed;
+			contactPacmanCherry();	
+		}
+	}
+	if (event.key === keys["Left"]) {
+		pacDirection = "left";
+		if (!(checkWall(pacX-pacSpeed-pacRadius, pacY-pacRadius) || checkWall(pacX-pacSpeed-pacRadius, pacY+pacRadius))){
+			pacX -= pacSpeed;
+			contactPacmanCherry();
+		}
+	}
+	if (event.key === keys["Right"]) {
+		pacDirection = "right";
+		if (!(checkWall(pacX+pacSpeed+pacRadius, pacY-pacRadius) || checkWall(pacX+pacSpeed+pacRadius, pacY+pacRadius))){
+			pacX += pacSpeed;
+			contactPacmanCherry();
+		}
+	}	
+  });
+
+function checkWall(x, y){
+	if (x > 899 || x < 0)
+		return true;
+	if (y > 449 || y < 0)
+		return true;
+	if (board[Math.floor(x / 60)][Math.floor(y / 45)] == 1)
+		return true;
+	return false;
+}
+
+function contactPacmanCherry(){
+	if (pacX - pacRadius < cherryX && cherryX < pacX + pacRadius)
+		if (pacY - pacRadius < cherryY && cherryY < pacY + pacRadius){
+			initCherry();
+			score += 50;
+			document.getElementById("scoreLabel").innerHTML = score;
+			return;
+		}
+	if (pacX - pacRadius < cherryX + 50 && cherryX + 50< pacX + pacRadius)
+		if (pacY - pacRadius < cherryY && cherryY < pacY + pacRadius){
+			initCherry();
+			score += 50;
+			document.getElementById("scoreLabel").innerHTML = score;
+			return;
+		}
+	if (pacX - pacRadius < cherryX && cherryX < pacX + pacRadius)
+		if (pacY - pacRadius < cherryY +40 && cherryY + 40 < pacY + pacRadius){
+			initCherry();
+			score += 50;
+			document.getElementById("scoreLabel").innerHTML = score;
+			return;
+		}
+	if (pacX - pacRadius < cherryX + 50 && cherryX + 50 < pacX + pacRadius)
+		if (pacY - pacRadius < cherryY +40 && cherryY + 40 < pacY + pacRadius){
+			initCherry();
+			score += 50;
+			document.getElementById("scoreLabel").innerHTML = score;
+			return;
+		}
+}
+
+function chooseRandomEmptyPoint(){
+	//choose random empty point for pacman at start of game
+	let found = false;
+	let position = [-1, -1];
+	while (!found){
+		position = [Math.floor(Math.random() * board.length), Math.floor(Math.random() * board[0].length)]
+		if (board[position[0]][position[1]] != 1){
+			found = true;
+		}
+	}
+	pacX = position[0] * 60 + 30;
+	pacY = position[1] * 45 + 22;
+}
+
+function initCherry(){
+	//choose random point and direction start for the cherry
+	cherryX = Math.floor(Math.random() * 800) + 50;
+	cherryY = Math.floor(Math.random() * 400) + 25;
+
+	
+	let cherrySpeed = 5;
+	if (Math.random() > 0.5)
+		cherrySpeedX = cherrySpeed;
+	else
+		cherrySpeedX = -1 * cherrySpeed;
+
+	if (Math.random() > 0.5)
+		cherrySpeedY = cherrySpeed;
+	else
+		cherrySpeedY = -1 * cherrySpeed;
+}
+
+/**
+ * This function sets the timer for game
+ */
+function setGameTimer(){
+	$("#timeLabel").html(timeOfGame.toString());
+	let timer=setInterval(function(){
+		timeOfGame--;
+		$("#timeLabel").html(timeOfGame.toString());
+		if(timeOfGame>0 && timeOfGame<10){
+			$("#timeLabel").css("color","red");
+		}
+		if(timeOfGame==0){
+			clearInterval(timer);
+		}
+	},1000);
+	gameIntervals.push(timer);
+}
+
+>>>>>>> Stashed changes
 function toDelete(){
 	showSettings();
 	generateRandomSettings();
