@@ -8,12 +8,14 @@ let timeOfGame=0;
 let monstersNumber=0;
 let ballsColors={};
 let board=new Array(15);
-let direction = "right";
+let pacDirection = "right";
 let intervalTimer;
 let angle = 0;
 let swicthAngle = -1;
-let pacX;
-let pacY;
+let pacSpeed = 5;
+let pacX = 0;
+let pacY = 0;
+let pacRadius = 20;
 let ctx;
 let loggedUser;
 let gameIntervals=[];
@@ -524,18 +526,10 @@ function stopTimer()
 function draw(){
 	drawMap();
 	drawPacman();
-	/*direction = "right";
-	drawPacman(ctx, 870, 25);
-	direction = "left";
-	drawPacman(ctx, 30, 25);
-	direction = "up";
-	drawPacman(ctx, 870, 425);
-	direction = "down";
-	drawPacman(ctx, 30, 425);*/
 
 	if (angle > 0.188 || angle < 0.0001)
 	{
-		swicthAngle = -1 * swicthAngle;
+		swicthAngle *= -1;
 	}
 	angle = swicthAngle * 0.02 + angle;
 }
@@ -574,7 +568,7 @@ function drawMap(){
 }
 
 function drawPacman(){
-	switch (direction) {
+	switch (pacDirection) {
 		case "right":
 			drawPacmanInDirection(0.2,1.8,pacX,pacY-10);
 			break;
@@ -596,10 +590,10 @@ function drawPacman(){
 	}
 }
 
-function drawPacmanInDirection(number1,number2,newPacX,newPackY){
+function drawPacmanInDirection(startAngle,endAngle,eyeX,eyeY){
 	// An arc with an opening at the right for the mouth
 	ctx.beginPath();
-	ctx.arc(pacX, pacY, 20, (number1-angle) * Math.PI, (number2+angle) * Math.PI, false);
+	ctx.arc(pacX, pacY, pacRadius, (startAngle-angle) * Math.PI, (endAngle+angle) * Math.PI, false);
 
 	// The mouth
 	// A line from the end of the arc to the centre
@@ -617,9 +611,39 @@ function drawPacmanInDirection(number1,number2,newPacX,newPackY){
 
 	// Draw the eye
 	ctx.beginPath();
-	ctx.arc(newPacX, newPackY, 4, 0, 2 * Math.PI, false);
+	ctx.arc(eyeX, eyeY, 4, 0, 2 * Math.PI, false);
 	ctx.fillStyle = "rgb(0, 0, 0)";
 	ctx.fill();
+}
+
+document.addEventListener('keydown', function (event) {
+	if (event.key === keys["Up"]) {
+		pacDirection = "up";
+		if (!(checkWall(pacX-pacRadius, pacY-pacSpeed-pacRadius) || checkWall(pacX+pacRadius, pacY-pacSpeed-pacRadius)))
+			pacY -= pacSpeed;
+	}
+	if (event.key === keys["Down"]) {
+		pacDirection = "down";
+		if (!(checkWall(pacX-pacRadius, pacY+pacSpeed+pacRadius) || checkWall(pacX+pacRadius, pacY+pacSpeed+pacRadius)))
+			pacY += pacSpeed;
+		
+	}
+	if (event.key === keys["Left"]) {
+		pacDirection = "left";
+		if (!(checkWall(pacX-pacSpeed-pacRadius, pacY-pacRadius) || checkWall(pacX-pacSpeed-pacRadius, pacY+pacRadius)))
+			pacX -= pacSpeed;		
+	}
+	if (event.key === keys["Right"]) {
+		pacDirection = "right";
+		if (!(checkWall(pacX+pacSpeed+pacRadius, pacY-pacRadius) || checkWall(pacX+pacSpeed+pacRadius, pacY+pacRadius)))
+			pacX += pacSpeed;		
+	}
+  });
+
+function checkWall(x, y){
+	if (board[Math.floor(x / 60)][Math.floor(y / 45)] == 1)
+		return true;
+	return false;
 }
 
 function chooseRandomEmptyPoint(){
