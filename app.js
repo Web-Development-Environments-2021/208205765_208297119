@@ -12,9 +12,13 @@ let direction = "right";
 let intervalTimer;
 let angle = 0;
 let swicthAngle = -1;
+let pacX;
+let pacY;
 
 function startGame(){
-	intervalTimer = setInterval(draw, 15); // Execute as fast as possible
+	generateBoard();
+	chooseRandomEmptyPoint();
+	intervalTimer = setInterval(draw, 30); // Execute as fast as possible
 }
 
 // terminate interval timer
@@ -24,17 +28,17 @@ function stopTimer()
 } 
 
 function draw(){
-	let c = document.getElementById("myCanvas");
-	let ctx = c.getContext("2d");
+	let ctx = document.getElementById("myCanvas").getContext("2d");
 	drawMap(ctx);
-	direction = "right";
+	drawPacman(ctx);
+	/*direction = "right";
 	drawPacman(ctx, 870, 25);
 	direction = "left";
 	drawPacman(ctx, 30, 25);
 	direction = "up";
 	drawPacman(ctx, 870, 425);
 	direction = "down";
-	drawPacman(ctx, 30, 425);
+	drawPacman(ctx, 30, 425);*/
 
 	if (angle > 0.188 || angle < 0.0001)
 	{
@@ -333,10 +337,6 @@ function updateSettingsValues(){
 	$("#monstersPicker").val(monstersNumber.toString());
 }
 
-function createGame(){
-	generateBoard();
-}
-
 function generateBoard(){
 	// init board
 	for(let i=0;i<board.length;i++){
@@ -429,8 +429,9 @@ function generateBoard(){
 		
 	}
 	setBallsOnBoard();
-	startGame();
-	drawMap();
+	$("#settingsButton").css("display","none");
+	$("#randomButton").css("display","none");
+	
 }
 
 function setBallsOnBoard(){
@@ -510,8 +511,6 @@ function setCornersToFree(numberOfFreeCells){
 	return numberOfFreeCells;
 }
 
-
-
 function createDirections(){
 	let directions=[1,2,3,4];
 	for (let i = directions.length - 1; i > 0; i--) {//shuffle directions
@@ -533,33 +532,30 @@ function drawMap(ctx){
 				ctx.fillRect(x*sizeX, y*sizeY, sizeX, sizeY);
 			}
 			else{
-				if (board[x][y] == 0){
-					ctx.fillStyle = "white";
-					ctx.fillRect(x*sizeX, y*sizeY, sizeX, sizeY);
-				}				
-				else{
+				ctx.fillStyle = "white";
+				ctx.fillRect(x*sizeX, y*sizeY, sizeX, sizeY);
+				if (board[x][y] != 0){
 					// draw candy
 					ctx.beginPath();
 					ctx.fillStyle = ballsColors[board[x][y]];
 					ctx.arc(x*sizeX + sizeX/2, y*sizeY + sizeY/2, 7.5, 0, Math.PI*2);
-					ctx.fill();
+					ctx.fill();					
 				}
-			}			
-					
+			}				
 		}
-	}	
+	}
 }
 
-function drawPacman(ctx, x, y){
+function drawPacman(ctx){
 	switch (direction) {
 		case "right":
 			// An arc with an opening at the right for the mouth
 			ctx.beginPath();
-			ctx.arc(x, y, 20, (0.2-angle) * Math.PI, (1.8+angle) * Math.PI, false);
+			ctx.arc(pacX, pacY, 20, (0.2-angle) * Math.PI, (1.8+angle) * Math.PI, false);
 
 			// The mouth
 			// A line from the end of the arc to the centre
-			ctx.lineTo(x, y);
+			ctx.lineTo(pacX, pacY);
 
 			// A line from the centre of the arc to the start
 			ctx.closePath();
@@ -573,7 +569,7 @@ function drawPacman(ctx, x, y){
 
 			// Draw the eye
 			ctx.beginPath();
-			ctx.arc(x, y-10, 4, 0, 2 * Math.PI, false);
+			ctx.arc(pacX, pacY-10, 4, 0, 2 * Math.PI, false);
 			ctx.fillStyle = "rgb(0, 0, 0)";
 			ctx.fill();
 			break;
@@ -581,11 +577,11 @@ function drawPacman(ctx, x, y){
 		case "left":
 			// An arc with an opening at the right for the mouth
 			ctx.beginPath();
-			ctx.arc(x, y, 20, (1.2-angle) * Math.PI, (0.8+angle) * Math.PI, false);
+			ctx.arc(pacX, pacY, 20, (1.2-angle) * Math.PI, (0.8+angle) * Math.PI, false);
 
 			// The mouth
 			// A line from the end of the arc to the centre
-			ctx.lineTo(x, y);
+			ctx.lineTo(pacX, pacY);
 
 			// A line from the centre of the arc to the start
 			ctx.closePath();
@@ -599,7 +595,7 @@ function drawPacman(ctx, x, y){
 
 			// Draw the eye
 			ctx.beginPath();
-			ctx.arc(x, y-10, 4, 0, 2 * Math.PI, false);
+			ctx.arc(pacX, pacY-10, 4, 0, 2 * Math.PI, false);
 			ctx.fillStyle = "rgb(0, 0, 0)";
 			ctx.fill();
 			break;
@@ -607,11 +603,11 @@ function drawPacman(ctx, x, y){
 		case "up":
 				// An arc with an opening at the right for the mouth
 				ctx.beginPath();
-				ctx.arc(x, y, 20, (1.7-angle) * Math.PI, (1.3+angle) * Math.PI, false);
+				ctx.arc(pacX, pacY, 20, (1.7-angle) * Math.PI, (1.3+angle) * Math.PI, false);
 	
 				// The mouth
 				// A line from the end of the arc to the centre
-				ctx.lineTo(x, y);
+				ctx.lineTo(pacX, pacY);
 	
 				// A line from the centre of the arc to the start
 				ctx.closePath();
@@ -625,7 +621,7 @@ function drawPacman(ctx, x, y){
 	
 				// Draw the eye
 				ctx.beginPath();
-				ctx.arc(x+10, y, 4, 0, 2 * Math.PI, false);
+				ctx.arc(pacX+10, pacY, 4, 0, 2 * Math.PI, false);
 				ctx.fillStyle = "rgb(0, 0, 0)";
 				ctx.fill();
 				break;
@@ -633,11 +629,11 @@ function drawPacman(ctx, x, y){
 		case "down":
 				// An arc with an opening at the right for the mouth
 				ctx.beginPath();
-				ctx.arc(x, y, 20, (0.7-angle) * Math.PI, (0.3+angle) * Math.PI, false);
+				ctx.arc(pacX, pacY, 20, (0.7-angle) * Math.PI, (0.3+angle) * Math.PI, false);
 	
 				// The mouth
 				// A line from the end of the arc to the centre
-				ctx.lineTo(x, y);
+				ctx.lineTo(pacX, pacY);
 	
 				// A line from the centre of the arc to the start
 				ctx.closePath();
@@ -651,7 +647,7 @@ function drawPacman(ctx, x, y){
 	
 				// Draw the eye
 				ctx.beginPath();
-				ctx.arc(x-10, y, 4, 0, 2 * Math.PI, false);
+				ctx.arc(pacX-10, pacY, 4, 0, 2 * Math.PI, false);
 				ctx.fillStyle = "rgb(0, 0, 0)";
 				ctx.fill();
 				break;
@@ -661,7 +657,23 @@ function drawPacman(ctx, x, y){
 	}
 }
 
+function chooseRandomEmptyPoint(){
+	let found = false;
+	let position = [-1, -1];
+	while (!found){
+		position = [Math.floor(Math.random() * board.length), Math.floor(Math.random() * board[0].length)]
+		if (board[position[0]][position[1]] != 1){
+			found = true;
+		}
+	}
+	pacX = position[0] * 60 + 30;
+	pacY = position[1] * 45 + 22;
+}
+
 function toDelete(){
+	stopTimer();
 	showSettings();
 	generateRandomSettings();
+	$("#gameDiv").css("display","block");
+	startGame();
 }
