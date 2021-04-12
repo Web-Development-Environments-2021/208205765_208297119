@@ -15,39 +15,6 @@ let swicthAngle = -1;
 let pacX;
 let pacY;
 
-function startGame(){
-	generateBoard();
-	chooseRandomEmptyPoint();
-	intervalTimer = setInterval(draw, 30); // Execute as fast as possible
-}
-
-// terminate interval timer
-function stopTimer()
-{  
-   	window.clearInterval( intervalTimer );
-} 
-
-function draw(){
-	let ctx = document.getElementById("myCanvas").getContext("2d");
-	drawMap(ctx);
-	drawPacman(ctx);
-	/*direction = "right";
-	drawPacman(ctx, 870, 25);
-	direction = "left";
-	drawPacman(ctx, 30, 25);
-	direction = "up";
-	drawPacman(ctx, 870, 425);
-	direction = "down";
-	drawPacman(ctx, 30, 425);*/
-
-	if (angle > 0.188 || angle < 0.0001)
-	{
-		swicthAngle = -1 * swicthAngle;
-	}
-	angle = swicthAngle * 0.02 + angle;
-}
-
-
 function validateDataAfterRegistretion(){
 	let userName=$('#userName').val();
 	if(userName==""){
@@ -520,9 +487,42 @@ function createDirections(){
 	return directions;
 }
 
+function startGame(){
+	generateBoard();
+	chooseRandomEmptyPoint();
+	intervalTimer = setInterval(draw, 30); // Execute as fast as possible
+}
+
+// terminate interval timer
+function stopTimer()
+{  
+   	window.clearInterval( intervalTimer );
+} 
+
+function draw(){
+	let ctx = document.getElementById("myCanvas").getContext("2d");
+	drawMap(ctx);
+	drawPacman(ctx);
+	/*direction = "right";
+	drawPacman(ctx, 870, 25);
+	direction = "left";
+	drawPacman(ctx, 30, 25);
+	direction = "up";
+	drawPacman(ctx, 870, 425);
+	direction = "down";
+	drawPacman(ctx, 30, 425);*/
+
+	if (angle > 0.188 || angle < 0.0001)
+	{
+		swicthAngle = -1 * swicthAngle;
+	}
+	angle = swicthAngle * 0.02 + angle;
+}
+
 function drawMap(ctx){
 	let sizeX = 900 / board.length;
 	let sizeY = 450 / board[0].length;
+	let R = 4;
 
 	ctx.clearRect(0, 0, 900, 450);
 	for(let x=0; x<board.length; x+=1){
@@ -535,10 +535,16 @@ function drawMap(ctx){
 				ctx.fillStyle = "white";
 				ctx.fillRect(x*sizeX, y*sizeY, sizeX, sizeY);
 				if (board[x][y] != 0){
+					if (board[x][y] == 5)
+						R = 4;
+					if (board[x][y] == 15)
+						R = 8;
+					if (board[x][y] == 25)
+						R = 13;
 					// draw candy
 					ctx.beginPath();
 					ctx.fillStyle = ballsColors[board[x][y]];
-					ctx.arc(x*sizeX + sizeX/2, y*sizeY + sizeY/2, 7.5, 0, Math.PI*2);
+					ctx.arc(x*sizeX + sizeX/2, y*sizeY + sizeY/2, R, 0, Math.PI*2);
 					ctx.fill();					
 				}
 			}				

@@ -14,7 +14,6 @@
 			<label id="appName"> Packman 2021</label>
 			<label id="submittersDetails"> Ron Tyntarev:208205765, Tomer Aizikovich:208297119</label>
 		</div>
-	
 		<div class="menu">
 			<a onclick="showWelcomeScreen()">Welcome</a>
 			<a onclick="register()" >Register</a>
@@ -23,60 +22,75 @@
 			<a onclick="toDelete()" >Start Game</a>
 			<a onclick="stopTimer()" >Stop Game</a>
 		</div>
-			<div id="welcomeContainer">
-				<img src="Img/pacman logo white background.png" style="height: 350px; width: 550px; margin-left: 25%; margin-right: 25%;">
-				<div id="buttonsContainer">
-					<button id="registerButton" class="welcomeButtons" onclick="register()">Register</button>
-					<button id="logInButton" class="welcomeButtons" style="display: inline-flex; align-items: flex-end;" onclick="logIn()">Log In</button>
-				</div>
+		<div id="welcomeContainer">
+			<img src="Img/pacman logo white background.png" style="height: 350px; width: 550px; margin-left: 25%; margin-right: 25%;">
+			<div id="buttonsContainer">
+				<button id="registerButton" class="welcomeButtons" onclick="register()">Register</button>
+				<button id="logInButton" class="welcomeButtons" style="display: inline-flex; align-items: flex-end;" onclick="logIn()">Log In</button>
 			</div>
-
-			<div id="registerDiv" class="forems">
-				<u><label style="font-weight: bold; font-style: italic;">Please enter your details:</label></u>
-				<form  onsubmit="return false;" id="registerForm">
-					<table>
-						<tr>
-					<td><label for="userName">User Name:</label></td>
-					<td><input type="text" id="userName" name="userName" placeholder="user name"/></td>
-				</tr>
-				<tr>
-					<td><label for="password">Password:</label>	</td>
-					<td><input type="password" id="password" name="password" placeholder="password"></td>
-				</tr>
-				<tr>
-					<td><label for="fullName">Full Name:</label></td>
-					<td><input type="text" id="fullName" name="fullName" placeholder="full name"></td>
-				</tr>
-				<tr>
-					<td><label for="email">Email:</label></td>
-					<td><input type="text" id="email" name="email" placeholder="email"></td>
-				</tr>
-				<tr>
-					<td><label for="birthDate">Birth Date:</label></td>
-					<td><input type="date" id="birthDate" name="birthDate"></td>
-				</tr>
-				<tr><td><button type="submit" id="submitButton" onclick="validateDataAfterRegistretion()" >submit</button></td></tr>
-					
-				</table>
-				</form>
-			</div>
-			<div id="gameAndSettingsDiv">
-				<div id="gameDiv">
-					<p id="usernameToShow"></p>
-					<div id="informationDiv">
-						<label class="informationLabels">Time:</label>
-						<label id="timeLabel">0</label>
-						<label class="informationLabels">Score:</label>
-						<label id="scoreLabel">0</label>
-						<label class="informationLabels">Lives:</label>
-						<label id="livesLabel">5</label>
-					</div>
-					<div id="gameBoardDiv">						
-						<canvas id="myCanvas" width="900" height="450" style="border:1px solid #d3d3d3;"></canvas>
-						<img src="Img/white.png">
-					</div>
-					<button id="newGameButton">Start new game</button>
+		</div>
+		<div id="registerDiv" class="forems">
+			<u><label style="font-weight: bold; font-style: italic;">Please enter your details:</label></u>
+			<form  onsubmit="return false;" id="registerForm">
+				<table>
+					<tr>
+				<td><label for="userName">User Name:</label></td>
+				<td><input type="text" id="userName" name="userName" placeholder="user name"/></td>
+			</tr>
+			<tr>
+				<td><label for="password">Password:</label>	</td>
+				<td><input type="password" id="password" name="password" placeholder="password"></td>
+			</tr>
+			<tr>
+				<td><label for="fullName">Full Name:</label></td>
+				<td><input type="text" id="fullName" name="fullName" placeholder="full name"></td>
+			</tr>
+			<tr>
+				<td><label for="email">Email:</label></td>
+				<td><input type="text" id="email" name="email" placeholder="email"></td>
+			</tr>
+			<tr>
+				<td><label for="birthDate">Birth Date:</label></td>
+				<td><input type="date" id="birthDate" name="birthDate"></td>
+			</tr>
+			<tr><td><button type="submit" id="submitButton" onclick="validateDataAfterRegistretion()" >submit</button></td></tr>
+				
+			</table>
+			</form>
+		</div>
+		<div id="logInDiv" class="forems">
+			<u><label style="font-weight: bold; font-style: italic;">Please enter your details:</label></u>
+			<form  onsubmit="return false;" id="logInForm" >
+				<table>
+					<tr>
+						<td><label for="LIuserName">User Name:</label></td>
+						<td><input type="text" id="LIuserName" name="LIuserName" placeholder="user name"/></td>
+					</tr>
+					<tr>
+						<td><label for="LIpassword">Password:</label>	</td>
+						<td><input type="password" id="LIpassword" name="LIpassword" placeholder="password"></td>
+					</tr>				
+					<tr><td><button type="submit" id="LIsubmitButton" onclick="validateDetailsAfterLogIn()" >submit</button></td></tr>				
+			</table>
+			</form>
+		</div>
+		<div id="gameAndSettingsDiv">
+			<div id="gameDiv">
+				<p id="usernameToShow"></p>
+				<div id="informationDiv">
+					<label class="informationLabels">Time:</label>
+					<label id="timeLabel">0</label>
+					<label class="informationLabels">Score:</label>
+					<label id="scoreLabel">0</label>
+					<label class="informationLabels">Lives:</label>
+					<label id="livesLabel">5</label>
 				</div>
+				<div id="gameBoardDiv">						
+					<canvas id="myCanvas" width="900" height="450" style="border:1px solid #d3d3d3;"></canvas>
+					<img src="Img/white.png">
+				</div>
+				<button id="newGameButton">Start new game</button>
+			</div>
 			<div id="settingsDiv">
 				<h3><u>Please set your settings:</u></h3>
 				<br/>
@@ -148,40 +162,23 @@
 				</table>
 			</form>
 			</div>
-			
 		</div>
-			<div id="logInDiv" class="forems">
-				<u><label style="font-weight: bold; font-style: italic;">Please enter your details:</label></u>
-				<form  onsubmit="return false;" id="logInForm" >
-					<table>
-						<tr>
-							<td><label for="LIuserName">User Name:</label></td>
-							<td><input type="text" id="LIuserName" name="LIuserName" placeholder="user name"/></td>
-						</tr>
-						<tr>
-							<td><label for="LIpassword">Password:</label>	</td>
-							<td><input type="password" id="LIpassword" name="LIpassword" placeholder="password"></td>
-						</tr>				
-						<tr><td><button type="submit" id="LIsubmitButton" onclick="validateDetailsAfterLogIn()" >submit</button></td></tr>				
-				</table>
-				</form>
-			</div>
-			<footer style="bottom:0; background-color: chocolate;">
-				<table style="font-weight: bolder;">
-					<tr>
-						<td>Creation date:</td>
-						<td>April 4th 2021</td>
-					</tr>
-					<tr>
-						<td>Languages used:</td>
-						<td>JavaScript, Html, Css, Jquery</td>
-					</tr>
-					<tr>
-						<td>Contact information:</td>
-						<td><a href="mailto:ronny54@gmail.com">ronny5423@gmail.com</a>, <a href="mailto:tomeraizikovich@gmail.com">tomeraizikovich@gmail.com</a></td>
-					</tr>
-				</table>
-			</footer>
+		<footer style="bottom:0; background-color: chocolate;">
+			<table style="font-weight: bolder;">
+				<tr>
+					<td>Creation date:</td>
+					<td>April 4th 2021</td>
+				</tr>
+				<tr>
+					<td>Languages used:</td>
+					<td>JavaScript, Html, Css, Jquery</td>
+				</tr>
+				<tr>
+					<td>Contact information:</td>
+					<td><a href="mailto:ronny54@gmail.com">ronny5423@gmail.com</a>, <a href="mailto:tomeraizikovich@gmail.com">tomeraizikovich@gmail.com</a></td>
+				</tr>
+			</table>
+		</footer>
 		</div>
 	</body>
 </html>
