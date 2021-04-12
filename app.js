@@ -23,6 +23,10 @@ let cherryX = 0;
 let cherryY = 0;
 let cherrySpeedX = 5;
 let cherrySpeedY = 5;
+let sizeX = 900 / board.length;
+let sizeY;
+let ghostsPositions=[];
+let ghostsArr=[];
 
 $(document).ready(function(){
 	ctx=document.getElementById("myCanvas").getContext("2d");
@@ -337,6 +341,7 @@ function generateBoard(){
 			board[i][j]=1;
 		}
 	}
+	sizeY=450 / board[0].length;
 	let randomStartRow=Math.floor(Math.random()*board.length);
 	let randomStartColumn=Math.floor(Math.random()*board[0].length);
 	board[randomStartRow][randomStartColumn]=0;
@@ -516,9 +521,11 @@ function startGame(){
 	$("#userNameToShow").html(loggedUser);
 	generateBoard();
 	initPosition();
+	initGhostsArr();
 	intervalTimer = setInterval(main, 30); // Execute as fast as possible
 	gameIntervals.push(intervalTimer);
 	setGameTimer();
+	
 }
 
 // terminate interval timer
@@ -531,6 +538,8 @@ function main(){
 	drawMap();
 	drawPacman();
 	drawCherry();
+	drawGhosts();
+	changeGhostsLocations();
 
 	if (angle > 0.188 || angle < 0.0001)
 	{
@@ -555,8 +564,6 @@ function drawCherry(){
 }
 
 function drawMap(){
-	let sizeX = 900 / board.length;
-	let sizeY = 450 / board[0].length;
 	let R = 4;
 
 	ctx.clearRect(0, 0, 900, 450);
@@ -675,7 +682,9 @@ function initPosition(){
 	let position = [-1, -1];
 	while (!found){
 		position = [Math.floor(Math.random() * board.length), Math.floor(Math.random() * board[0].length)]
-		if (board[position[0]][position[1]] != 1){
+		if (board[position[0]][position[1]] != 1 && board[position[0]][position[1]]!=board[0][0] && board[position[0]][position[1]]!=board[0][board[0].length-1] && board[position[0]][position[1]]!=board[board.length-1][0]
+			&& board[position[0]][position[1]]!=board[board.length-1][board[0].length-1])
+		{
 			found = true;
 		}
 	}
@@ -696,6 +705,30 @@ function initPosition(){
 		cherrySpeedY = cherrySpeed;
 	else
 		cherrySpeedY = -1 * cherrySpeed;
+	
+		initGhostPositions();
+}
+
+function initGhostPositions(){
+	let directions=createDirections();
+	for(let i=0;i<monstersNumber;i++){
+		switch (directions[i]) {
+			case 1:
+				ghostsPositions[i]=[0,0];//top left corner
+				break;
+			case 2:
+				ghostsPositions[i]= [0,sizeY*(board[0].length-1)];//bottom left corener	
+				break;
+			case 3:
+				ghostsPositions[i]=[sizeX*(board.length-1),0];//top right corner
+				break;
+			case 4:
+				ghostsPositions[i]=[(board.length-1)*sizeX,(board[0].length-1)*sizeY];//bottom right corner
+				break;		
+			default:
+				break;
+		}
+	}
 }
 
 /**
@@ -714,6 +747,98 @@ function setGameTimer(){
 		}
 	},1000);
 	gameIntervals.push(timer);
+}
+
+function initGhostsArr(){
+	switch (monstersNumber) {
+		case 1:
+			ghostsArr.push("Img/ghost1.png");
+			break;
+			case 2:
+				ghostsArr.push("Img/ghost1.png");
+				ghostsArr.push("Img/ghost2.jpg");
+				break;
+			case 3:
+				ghostsArr.push("Img/ghost1.png");
+				ghostsArr.push("Img/ghost2.jpg");
+				ghostsArr.push("Img/ghost3.jpg");
+				break;
+			case 4:
+				ghostsArr.push("Img/ghost1.png");
+				ghostsArr.push("Img/ghost2.jpg");
+				ghostsArr.push("Img/ghost3.jpg");
+				ghostsArr.push("Img/ghost4.jpg");
+				break;		
+		default:
+			break;
+
+	}
+}
+
+function drawGhosts(){
+	for(let i=0;i<ghostsArr.length;i++){
+		let image=new Image();
+		image.src=ghostsArr[i];
+		ctx.drawImage(image,ghostsPositions[i][0],ghostsPositions[i][1],50,40);
+	}
+}
+
+function changeGhostsLocations(){
+	for(let j=0;j<ghostsPositions.length;j++){
+		let ghostX=ghostsPositions[j][0];
+		let ghostY=ghostsPositions[j][1];
+		originalManhatanDistance=Math.abs(ghostX-pacX)+Math.abs(ghostY-pacY);
+		let directions=createDirections();
+		let newPosition=[];
+		(function(){
+			for(let i=0;i<directions.length;i++){
+				switch (directions[i]) {
+					case 1://up
+						if(decideIfGoInThisDirection(originalManhatanDistance,ghostX,ghostY-1)){
+							newPosition= [ghostX,ghostY-1];
+							return;
+						}
+						break;
+					case 2://down
+						if(decideIfGoInThisDirection(originalManhatanDistance,ghostX,ghostY+1)){
+							newPosition= [ghostX,ghostY+1];
+							return;
+						}
+						break;
+					case 3://left
+						if(decideIfGoInThisDirection(originalManhatanDistance,ghostX-1,ghostY)){
+							newPosition= [ghostX-1,ghostY];
+							return;
+						}
+						break;
+					case 4://right
+						if(decideIfGoInThisDirection(originalManhatanDistance,ghostX+1,ghostY)){
+							newPosition=[ghostX+1,ghostY];
+							return;
+						}
+						break;		
+					default:
+						break;
+				}
+			}
+		}());
+		if(newPosition.length!=0){
+			ghostsPositions[j]=newPosition;
+		}
+		else{
+			////////////////choose random direction
+		}
+	}
+}
+
+function decideIfGoInThisDirection(originalManhatanDistance,ghostX,ghostY){
+	if(!checkWall(ghostX,ghostY)){
+		newManhatanDistance=Math.abs(ghostX-pacX)+Math.abs(ghostY-pacY);
+		if(newManhatanDistance<originalManhatanDistance){
+			return true;
+		}
+	}
+	return false;
 }
 
 function toDelete(){
