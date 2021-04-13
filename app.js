@@ -32,7 +32,7 @@ let ghostHeigh = 40;
 let ghostSpeed = 1;
 let countCandy = 0;
 let radiusCandys = {5:12, 15:8, 25:4};
-let backgroundSong=new Audio("OpeningMusic.mp3");
+let backgroundSong=new Audio("Beethoven-Symphony5.mp3");
 let lives=5;
 
 $(document).ready(function(){
@@ -567,7 +567,7 @@ function startGame(){
 	score=0;
 	$("#scoreLabel").html("0");
 	backgroundSong.loop=true;
-	backgroundSong.play();
+	//backgroundSong.play();
 	generateBoard();
 	initPacmanPosition();
 	initCherry();
@@ -595,7 +595,7 @@ function main(){
 	drawCherry();
 	if (pacmanContact(cherryX, cherryY, 50, 40)){
 		initCherry();
-		increaseScore(50);
+		changeScore(50);
 	}
 	drawGhosts();
 	changeGhostsLocations();
@@ -736,7 +736,7 @@ function touchCandy(){
 		return;
 	
 	if (pacmanContact(i*sizeX + sizeX/2, j*sizeY + sizeY/2, radiusCandys[board[i][j]]*2, radiusCandys[board[i][j]]*2)){
-		increaseScore(board[i][j]);
+		changeScore(board[i][j]);
 		board[i][j] = 0;
 		countCandy++;
 	}
@@ -943,21 +943,22 @@ function changeGhostsLocations(){
 					break;
 				default:
 					break;
-			}
+			}			
 		}
 		ghostsPositions[j] = [choiceArr[2], choiceArr[3]];
+		if (pacmanContact(choiceArr[2], choiceArr[3], ghostWidth, ghostHeigh)){
+			changeScore(-10);
+			decreaseLives();
+			initPacmanPosition();
+			initGhostPositions();
+		}
 	}
 }
 	
-
-function increaseScore(s){
+function changeScore(s){
+	// change the score of the game by s
 	score += s;
 	document.getElementById("scoreLabel").innerHTML = score;
-}
-
-function decreaseScore(s){
-	score-=s;
-	$("#scoreLabel").html(score.toString());
 }
 
 function decreaseLives(){
