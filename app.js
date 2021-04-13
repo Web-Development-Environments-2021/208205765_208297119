@@ -29,7 +29,7 @@ let ghostsPositions=[];
 let ghostsArr=[];
 let ghostWidth = 50;
 let ghostHeigh = 40;
-let ghostSpeed = 4;
+let ghostSpeed = 1;
 let countCandy = 0;
 let radiusCandys = {5:12, 15:8, 25:4};
 
@@ -836,29 +836,33 @@ function changeGhostsLocations(){
 			for(let i=0;i<directions.length;i++){
 				switch (directions[i]) {
 					case 1://up
-						if(decideIfGoInThisDirection(originalManhatanDistance,ghostX,ghostY-1)){
-							newPosition= [ghostX,ghostY-1];
-							return;
-						}
+						if (!(checkWall(ghostX, ghostY-ghostSpeed) || checkWall(ghostX+ghostWidth, ghostY-ghostSpeed)))
+							if(Math.abs(ghostX-pacX)+Math.abs(ghostY-ghostSpeed-pacY)<originalManhatanDistance){
+								newPosition= [ghostX,ghostY-ghostSpeed];
+								return;
+							}
 						break;
 					case 2://down
-						if(decideIfGoInThisDirection(originalManhatanDistance,ghostX,ghostY+1)){
-							newPosition= [ghostX,ghostY+1];
-							return;
-						}
+						if (!(checkWall(ghostX, ghostY+ghostSpeed+ghostHeigh) || checkWall(ghostX+ghostWidth, ghostY+ghostSpeed+ghostHeigh)))
+							if(Math.abs(ghostX-pacX)+Math.abs(ghostY+ghostSpeed-pacY)<originalManhatanDistance){
+								newPosition= [ghostX,ghostY+ghostSpeed];
+								return;
+							}
 						break;
 					case 3://left
-						if(decideIfGoInThisDirection(originalManhatanDistance,ghostX-1,ghostY)){
-							newPosition= [ghostX-1,ghostY];
-							return;
-						}
+						if (!(checkWall(ghostX-ghostSpeed, ghostY) || checkWall(ghostX-ghostSpeed, ghostY+ghostHeigh)))
+							if(Math.abs(ghostX-ghostSpeed-pacX)+Math.abs(ghostY-pacY)<originalManhatanDistance){
+								newPosition= [ghostX-ghostSpeed,ghostY];
+								return;
+							}
 						break;
 					case 4://right
-						if(decideIfGoInThisDirection(originalManhatanDistance,ghostX+1,ghostY)){
-							newPosition=[ghostX+1,ghostY];
-							return;
-						}
-						break;		
+						if (!(checkWall(ghostX+ghostSpeed+ghostWidth, ghostY) || checkWall(ghostX+ghostSpeed+ghostWidth, ghostY+ghostHeigh)))
+							if(Math.abs(ghostX+ghostSpeed-pacX)+Math.abs(ghostY-pacY)<originalManhatanDistance){
+								newPosition=[ghostX+ghostSpeed,ghostY];
+								return;
+							}
+						break;
 					default:
 						break;
 				}
@@ -871,24 +875,6 @@ function changeGhostsLocations(){
 			////////////////choose random direction
 		}
 	}
-}
-
-function decideIfGoInThisDirection(originalManhatanDistance,ghostX,ghostY){
-	if(!checkWall(ghostX,ghostY)){
-
-		// if ghost want go this is the condition:
-		// need to change "ghostSpeed"
-		// up - checkWall(ghostX, ghostY-ghostSpeed) || checkWall(ghostX+ghostWidth, ghostY-ghostSpeed)
-		// down - checkWall(ghostX, ghostY+ghostSpeed+ghostHeigh) || checkWall(ghostX+ghostWidth, ghostY+ghostSpeed+ghostHeigh)
-		// right - checkWall(ghostX+ghostSpeed+ghostWidth, ghostY) || checkWall(ghostX+ghostSpeed+ghostWidth, ghostY+ghostHeigh)
-		// left - checkWall(ghostX-ghostSpeed, ghostY) || checkWall(ghostX-ghostSpeed, ghostY+ghostHeigh)
-
-		newManhatanDistance=Math.abs(ghostX-pacX)+Math.abs(ghostY-pacY);
-		if(newManhatanDistance<originalManhatanDistance){
-			return true;
-		}
-	}
-	return false;
 }
 
 function increaseScore(s){
