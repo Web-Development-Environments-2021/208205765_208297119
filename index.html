@@ -30,47 +30,47 @@
 			</div>
 		</div>
 		<div id="registerDiv" class="forems">
-			<u><label style="font-weight: bold; font-style: italic;">Please enter your details:</label></u>
+			<u><label style="font-weight: bold; font-style: italic; padding-bottom: 5%; font-size: 30px;">Please enter your details:</label></u>
 			<form  onsubmit="return false;" id="registerForm">
 				<table>
 					<tr>
-				<td><label for="userName">User Name:</label></td>
+				<td><label class="regLabels" for="userName">User Name:</label></td>
 				<td><input type="text" id="userName" name="userName" placeholder="user name"/></td>
 			</tr>
 			<tr>
-				<td><label for="password">Password:</label>	</td>
+				<td><label class="regLabels" for="password">Password:</label>	</td>
 				<td><input type="password" id="password" name="password" placeholder="password"></td>
 			</tr>
 			<tr>
-				<td><label for="fullName">Full Name:</label></td>
+				<td><label class="regLabels" for="fullName">Full Name:</label></td>
 				<td><input type="text" id="fullName" name="fullName" placeholder="full name"></td>
 			</tr>
 			<tr>
-				<td><label for="email">Email:</label></td>
+				<td><label class="regLabels" for="email">Email:</label></td>
 				<td><input type="text" id="email" name="email" placeholder="email"></td>
 			</tr>
 			<tr>
-				<td><label for="birthDate">Birth Date:</label></td>
+				<td><label class="regLabels" for="birthDate">Birth Date:</label></td>
 				<td><input type="date" id="birthDate" name="birthDate"></td>
 			</tr>
-			<tr><td><button type="submit" id="submitButton" >submit</button></td></tr>
+			<tr><td><button type="submit" id="submitButton" class="submitButtons" >submit</button></td></tr>
 				
 			</table>
 			</form>
 		</div>
 		<div id="logInDiv" class="forems">
-			<u><label style="font-weight: bold; font-style: italic;">Please enter your details:</label></u>
+			<u><label style="font-weight: bold; font-style: italic; margin-bottom: 5%; font-size: 30px;">Please enter your details:</label></u>
 			<form  onsubmit="return false;" id="logInForm" >
 				<table>
 					<tr>
-						<td><label for="LIuserName">User Name:</label></td>
+						<td><label class="regLabels" for="LIuserName">User Name:</label></td>
 						<td><input type="text" id="LIuserName" name="LIuserName" placeholder="user name"/></td>
 					</tr>
 					<tr>
-						<td><label for="LIpassword">Password:</label>	</td>
+						<td><label class="regLabels" for="LIpassword">Password:</label>	</td>
 						<td><input type="password" id="LIpassword" name="LIpassword" placeholder="password"></td>
 					</tr>				
-					<tr><td><button type="submit" id="LIsubmitButton" onclick="validateDetailsAfterLogIn()" >submit</button></td></tr>				
+					<tr><td><button type="submit" id="LIsubmitButton" onclick="validateDetailsAfterLogIn()" class="submitButtons" >submit</button></td></tr>				
 			</table>
 			</form>
 		</div>
@@ -166,16 +166,17 @@
 			</form>
 			</div>
 		</div>
-		<div>
-			<div>
-				<table>
+		<div id="modalDiv">
+			<div id="modalContent">
+				<span id="closeButton" onclick="closeAbout()">&times;</span>
+				<table style="text-align: center; color: white; font-size: 25px; margin: 0 auto;">
 					<tr>
 						<td>Submitors names:</td>
 						<td>Ron Tyntarev, Tomer Aizikovich</td>
 					</tr>
 					<tr>
 						<td>Jquery plugin:</td>
-						<td></td>
+						<td>None</td>
 					</tr>
 					<tr>
 						<td>template usage:</td>
@@ -183,7 +184,7 @@
 					</tr>
 					<tr>
 						<td>Difficulties:</td>
-						<td></td>
+						<td>We had difficulties in arranging html elements as we want</td>
 					</tr>
 				</table>
 			</div>
