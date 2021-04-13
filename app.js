@@ -157,12 +157,12 @@ function validateDetailsAfterLogIn(){
 
 function register(){
 	document.getElementById("registerForm").reset();
-	switchDivs("#registerDiv","block");	
+	switchDivs("#registerDiv","flex");	
 }
 
 function logIn(){
 	document.getElementById("logInForm").reset();
-	switchDivs("#logInDiv","block");
+	switchDivs("#logInDiv","flex");
 }
 
 function showWelcomeScreen(){
@@ -955,16 +955,6 @@ function increaseScore(s){
 	document.getElementById("scoreLabel").innerHTML = score;
 }
 
-function decreaseScore(s){
-	score-=s;
-	$("#scoreLabel").html(score.toString());
-}
-
-function decreaseLives(){
-	lives--;
-	drawLives();
-}
-
 function increaseLives(){
 	lives++;
 	drawLives();
@@ -976,6 +966,20 @@ function drawLives(){
 		let img=new Image(20,30);
 		img.src="Img/live.png";
 		document.getElementById("livesDiv").appendChild(img);
+	}
+}
+
+function aboutScreen(){
+	$("#modalDiv").css("display","block");
+}
+
+function closeAbout(){
+	$("#modalDiv").css("display","none");
+}
+
+window.onclick=function(event){
+	if(event.target==document.getElementById("modalDiv")){
+		closeAbout();
 	}
 }
 
