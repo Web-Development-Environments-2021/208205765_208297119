@@ -525,7 +525,7 @@ function createDirections(){
 function startGame(){
 	$("#userNameToShow").html(loggedUser);
 	generateBoard();
-	chooseRandomEmptyPoint();
+	initPacmanPosition();
 	initCherry();
 	initGhostPositions();
 	initGhostsArr();
@@ -718,20 +718,20 @@ function pacmanContact(x, y, width, heigh){
 	return false;
 }
 
-function chooseRandomEmptyPoint(){
-	//choose random empty point for pacman at start of game
+function initPacmanPosition(){
+	//choose random empty point for pacman at start of game that not in the edges of the bord
 	let found = false;
-	let position = [-1, -1];
+	let i = -1;
+	let j = -1;
 	while (!found){
-		position = [Math.floor(Math.random() * board.length), Math.floor(Math.random() * board[0].length)]
-		if (board[position[0]][position[1]] != 1 && board[position[0]][position[1]]!=board[0][0] && board[position[0]][position[1]]!=board[0][board[0].length-1] && board[position[0]][position[1]]!=board[board.length-1][0]
-			&& board[position[0]][position[1]]!=board[board.length-1][board[0].length-1])
-		{
+		position = [Math.floor(Math.random() * board.length), Math.floor(Math.random() * board[0].length)];
+		i = Math.floor(Math.random() * board.length);
+		j = Math.floor(Math.random() * board[0].length);
+		if (board[i][j] != 1 && (i != 0 && j != 0) && (i != board.length-1 && j != 0) && (i != board.length-1 && j != board[0].length-1) && (i != 0 && j != board[0].length-1))
 			found = true;
-		}
 	}
-	pacX = position[0] * 60 + 30;
-	pacY = position[1] * 45 + 22;
+	pacX = i * 60 + 30;
+	pacY = j * 45 + 22;
 }
 
 function initCherry(){
@@ -739,7 +739,6 @@ function initCherry(){
 	cherryX = Math.floor(Math.random() * 800) + 50;
 	cherryY = Math.floor(Math.random() * 400) + 25;
 
-	
 	let cherrySpeed = 5;
 	if (Math.random() > 0.5)
 		cherrySpeedX = cherrySpeed;
