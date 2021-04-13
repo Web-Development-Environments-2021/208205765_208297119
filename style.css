@@ -115,7 +115,7 @@ html,body{
 }
 
 #informationDiv{
-  flex-direction: row;
+  flex-direction: inline-block;
   float: left;
 }
 
@@ -134,3 +134,5 @@ html,body{
   display: flex;
   flex-direction: row;
 }
+
+

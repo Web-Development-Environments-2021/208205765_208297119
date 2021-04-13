@@ -32,10 +32,13 @@ let ghostHeigh = 40;
 let ghostSpeed = 1;
 let countCandy = 0;
 let radiusCandys = {5:12, 15:8, 25:4};
+let backgroundSong=new Audio("OpeningMusic.mp3");
+let lives=5;
 
 $(document).ready(function(){
 	ctx=document.getElementById("myCanvas").getContext("2d");
-});
+	$("#submitButton").click(validateDataAfterRegistretion);
+	});
 
 function validateDataAfterRegistretion(){
 	let userName=$('#userName').val();
@@ -194,6 +197,8 @@ function stopGamesIntervals(){
 		clearInterval(item);
 	});
 	gameIntervals=[];
+	backgroundSong.pause();
+	backgroundSong.currentTime=0;
 }
 
 /**
@@ -338,102 +343,137 @@ function updateSettingsValues(){
 	$("#monstersPicker").val(monstersNumber.toString());
 }
 
+
 function generateBoard(){
 	// init board
 	for(let i=0;i<board.length;i++){
 		board[i]=new Array(10);
 		for(let j=0;j<board[i].length;j++){
-			board[i][j]=1;
+			board[i][j]=0;
 		}
 	}
 	sizeY=450 / board[0].length;
-	let randomStartRow=Math.floor(Math.random()*board.length);
-	let randomStartColumn=Math.floor(Math.random()*board[0].length);
-	board[randomStartRow][randomStartColumn]=0;
-	let numberOfFreeCells=1;
-	let stack=[[randomStartRow,randomStartColumn]];
-	while(stack.length!=0){
-		let position=stack.pop();
-		let currentRow=position[0];
-		let currentColumn=position[1];
-		let directions=createDirections();
-		(function(){
-		for(let i=0;i<directions.length;i++){
-			switch (directions[i]) {
-				case 1://up
-					if(currentRow-2>-1 && board[currentRow-2][currentColumn]==1){
-						board[currentRow-1][currentColumn]=0;
-						board[currentRow-2][currentColumn]=0;
-						numberOfFreeCells+=2;
-						stack.push([currentRow,currentColumn]);
-						stack.push([currentRow-2,currentColumn]);
-						return;
-					}
-					break;
+	setWallsOnBoard();
+	// let randomStartRow=Math.floor(Math.random()*board.length);
+	// let randomStartColumn=Math.floor(Math.random()*board[0].length);
+	// board[randomStartRow][randomStartColumn]=0;
+	// let numberOfFreeCells=1;
+	// let stack=[[randomStartRow,randomStartColumn]];
+	// while(stack.length!=0){
+	// 	let position=stack.pop();
+	// 	let currentRow=position[0];
+	// 	let currentColumn=position[1];
+	// 	let directions=createDirections();
+	// 	(function(){
+	// 	for(let i=0;i<directions.length;i++){
+	// 		switch (directions[i]) {
+	// 			case 1://up
+	// 				if(currentRow-2>-1 && board[currentRow-2][currentColumn]==1){
+	// 					board[currentRow-1][currentColumn]=0;
+	// 					board[currentRow-2][currentColumn]=0;
+	// 					numberOfFreeCells+=2;
+	// 					stack.push([currentRow,currentColumn]);
+	// 					stack.push([currentRow-2,currentColumn]);
+	// 					return;
+	// 				}
+	// 				break;
 
-				case 2://down
-					if(currentRow+2<board.length && board[currentRow+2][currentColumn]==1){
-						board[currentRow+2][currentColumn]=0;
-						board[currentRow+1][currentColumn]=0;
-						numberOfFreeCells+=2;
-						stack.push([currentRow,currentColumn]);
-						stack.push([currentRow+2,currentColumn]);
-						return;
-					}
-					break;
+	// 			case 2://down
+	// 				if(currentRow+2<board.length && board[currentRow+2][currentColumn]==1){
+	// 					board[currentRow+2][currentColumn]=0;
+	// 					board[currentRow+1][currentColumn]=0;
+	// 					numberOfFreeCells+=2;
+	// 					stack.push([currentRow,currentColumn]);
+	// 					stack.push([currentRow+2,currentColumn]);
+	// 					return;
+	// 				}
+	// 				break;
 
-				case 3://left
-					if(currentColumn-2>-1 && board[currentRow][currentColumn-2]==1){
-						board[currentRow][currentColumn-2]=0;
-						board[currentRow][currentColumn-1]=0;
-						numberOfFreeCells+=2;
-						stack.push([currentRow,currentColumn]);
-						stack.push([currentRow,currentColumn-2]);
-						return;
-					}
-					break;
+	// 			case 3://left
+	// 				if(currentColumn-2>-1 && board[currentRow][currentColumn-2]==1){
+	// 					board[currentRow][currentColumn-2]=0;
+	// 					board[currentRow][currentColumn-1]=0;
+	// 					numberOfFreeCells+=2;
+	// 					stack.push([currentRow,currentColumn]);
+	// 					stack.push([currentRow,currentColumn-2]);
+	// 					return;
+	// 				}
+	// 				break;
 
-				case 4://right
-					if(currentColumn+2<board[0].length && board[currentRow][currentColumn+2]==1){
-						board[currentRow][currentColumn+2]=0;
-						board[currentRow][currentColumn+1]=0;
-						numberOfFreeCells+=2;
-						stack.push([currentRow,currentColumn]);
-						stack.push([currentRow,currentColumn+2]);
-						return;
-					}
-					break;
+	// 			case 4://right
+	// 				if(currentColumn+2<board[0].length && board[currentRow][currentColumn+2]==1){
+	// 					board[currentRow][currentColumn+2]=0;
+	// 					board[currentRow][currentColumn+1]=0;
+	// 					numberOfFreeCells+=2;
+	// 					stack.push([currentRow,currentColumn]);
+	// 					stack.push([currentRow,currentColumn+2]);
+	// 					return;
+	// 				}
+	// 				break;
 
-				default:
-					break;
-			}
-		}
-	})();
-	}
-	numberOfFreeCells=setCornersToFree(numberOfFreeCells);
-	if(numberOfFreeCells<ballsNumber){
-		let breaked=false;
-		for(let i=0;i<board.length;i++){
-			for(let j=0;j<board[0].length;j++){
-				if(board[i][j]==1){
-					board[i][j]=0;
-					numberOfFreeCells++;
-				}
-				if(numberOfFreeCells==ballsNumber){
-					breaked=true;
-					break;
-				}
-			}
-			if(breaked){
-				break;
-			}
-		}
+	// 			default:
+	// 				break;
+	// 		}
+	// 	}
+	// })();
+	// }
+	// numberOfFreeCells=setCornersToFree(numberOfFreeCells);
+	// if(numberOfFreeCells<ballsNumber){
+	// 	let breaked=false;
+	// 	for(let i=0;i<board.length;i++){
+	// 		for(let j=0;j<board[0].length;j++){
+	// 			if(board[i][j]==1){
+	// 				board[i][j]=0;
+	// 				numberOfFreeCells++;
+	// 			}
+	// 			if(numberOfFreeCells==ballsNumber){
+	// 				breaked=true;
+	// 				break;
+	// 			}
+	// 		}
+	// 		if(breaked){
+	// 			break;
+	// 		}
+	// 	}
 		
-	}
+	// }
 	setBallsOnBoard();
 	$("#settingsButton").css("display","none");
 	$("#randomButton").css("display","none");
 	
+}
+
+function setWallsOnBoard(){
+	board[1][0]=1;
+	board[2][0]=1;
+	board[3][0]=1;
+	board[2][1]=1;
+	board[3][1]=1;
+	board[5][1]=1;
+	board[1][8]=1;
+	board[1][9]=1;
+	board[3][7]=1;
+	board[3][8]=1;
+	board[4][7]=1;
+	board[4][8]=1;
+	board[5][7]=1;
+	board[5][8]=1;
+	board[5][9]=1;
+	board[7][0]=1;
+	board[7][1]=1;
+	board[8][0]=1;
+	board[7][4]=1;
+	board[7][5]=1;
+	board[8][3]=1;
+	board[8][4]=1;
+	board[8][5]=1;
+	board[8][6]=1;
+	board[11][1]=1;
+	board[12][1]=1;
+	board[11][7]=1;
+	board[11][8]=1;
+	board[12][7]=1;
+	board[12][8]=1;
 }
 
 function setBallsOnBoard(){
@@ -524,6 +564,10 @@ function createDirections(){
 
 function startGame(){
 	$("#userNameToShow").html(loggedUser);
+	score=0;
+	$("#scoreLabel").html("0");
+	backgroundSong.loop=true;
+	backgroundSong.play();
 	generateBoard();
 	initPacmanPosition();
 	initCherry();
@@ -532,7 +576,7 @@ function startGame(){
 	intervalTimer = setInterval(main, 25); // Execute as fast as possible
 	gameIntervals.push(intervalTimer);
 	setGameTimer();
-	
+	drawLives();
 }
 
 // terminate interval timer
@@ -777,18 +821,45 @@ function initGhostPositions(){
  * This function sets the timer for game
  */
 function setGameTimer(){
-	$("#timeLabel").html(timeOfGame.toString());
+	setGameTimeLabel();
+	$("#timeLabel").css("color","black");
 	let timer=setInterval(function(){
 		timeOfGame--;
-		$("#timeLabel").html(timeOfGame.toString());
+		setGameTimeLabel();
 		if(timeOfGame>0 && timeOfGame<10){
 			$("#timeLabel").css("color","red");
 		}
 		if(timeOfGame==0){
 			clearInterval(timer);
+			finishGame();
 		}
 	},1000);
 	gameIntervals.push(timer);
+}
+
+function setGameTimeLabel(){
+	let minutes=0;
+	let time=timeOfGame;
+	while(time>=60){
+		minutes++;
+		time-=60;
+	}
+	if(time<10){
+		$("#timeLabel").html("0"+minutes+":0"+time.toString());
+	}
+	else{
+		$("#timeLabel").html("0"+minutes+":"+time.toString());
+	}
+	
+}
+
+function finishGame(){
+	if(score<100){
+		alert("You are better than "+score.toString()+" points!");
+	}
+	else{
+		alert("Winner!!!");
+	}
 }
 
 function initGhostsArr(){
@@ -832,36 +903,53 @@ function changeGhostsLocations(){
 		originalManhatanDistance=Math.abs(ghostX-pacX)+Math.abs(ghostY-pacY);
 		let directions=createDirections();
 		let newPosition=[];
+		let newForcedPosition=[];
 		(function(){
 			for(let i=0;i<directions.length;i++){
 				switch (directions[i]) {
 					case 1://up
-						if (!(checkWall(ghostX, ghostY-ghostSpeed) || checkWall(ghostX+ghostWidth, ghostY-ghostSpeed)))
+						if (!(checkWall(ghostX, ghostY-ghostSpeed) || checkWall(ghostX+ghostWidth, ghostY-ghostSpeed))){
 							if(Math.abs(ghostX-pacX)+Math.abs(ghostY-ghostSpeed-pacY)<originalManhatanDistance){
 								newPosition= [ghostX,ghostY-ghostSpeed];
 								return;
 							}
+						}
+						else{
+							newForcedPosition=[ghostX,ghostY-ghostSpeed];
+						}
 						break;
 					case 2://down
-						if (!(checkWall(ghostX, ghostY+ghostSpeed+ghostHeigh) || checkWall(ghostX+ghostWidth, ghostY+ghostSpeed+ghostHeigh)))
+						if (!(checkWall(ghostX, ghostY+ghostSpeed+ghostHeigh) || checkWall(ghostX+ghostWidth, ghostY+ghostSpeed+ghostHeigh))){
 							if(Math.abs(ghostX-pacX)+Math.abs(ghostY+ghostSpeed-pacY)<originalManhatanDistance){
 								newPosition= [ghostX,ghostY+ghostSpeed];
 								return;
 							}
+						}
+						else{
+							newForcedPosition=[ghostX,ghostY+ghostSpeed];
+						}
 						break;
 					case 3://left
-						if (!(checkWall(ghostX-ghostSpeed, ghostY) || checkWall(ghostX-ghostSpeed, ghostY+ghostHeigh)))
+						if (!(checkWall(ghostX-ghostSpeed, ghostY) || checkWall(ghostX-ghostSpeed, ghostY+ghostHeigh))){
 							if(Math.abs(ghostX-ghostSpeed-pacX)+Math.abs(ghostY-pacY)<originalManhatanDistance){
 								newPosition= [ghostX-ghostSpeed,ghostY];
 								return;
 							}
+						}
+						else{
+							newForcedPosition=[ghostX-ghostSpeed,ghostY];
+						}
 						break;
 					case 4://right
-						if (!(checkWall(ghostX+ghostSpeed+ghostWidth, ghostY) || checkWall(ghostX+ghostSpeed+ghostWidth, ghostY+ghostHeigh)))
+						if (!(checkWall(ghostX+ghostSpeed+ghostWidth, ghostY) || checkWall(ghostX+ghostSpeed+ghostWidth, ghostY+ghostHeigh))){
 							if(Math.abs(ghostX+ghostSpeed-pacX)+Math.abs(ghostY-pacY)<originalManhatanDistance){
 								newPosition=[ghostX+ghostSpeed,ghostY];
 								return;
 							}
+						}
+						else{
+							newForcedPosition=[ghostX+ghostSpeed,ghostY];
+						}
 						break;
 					default:
 						break;
@@ -871,8 +959,8 @@ function changeGhostsLocations(){
 		if(newPosition.length!=0){
 			ghostsPositions[j]=newPosition;
 		}
-		else{
-			////////////////choose random direction
+		else{//if no move improves manhatan distance, choose random direction
+			ghostsPositions[i]=newForcedPosition;
 		}
 	}
 }
@@ -880,6 +968,30 @@ function changeGhostsLocations(){
 function increaseScore(s){
 	score += s;
 	document.getElementById("scoreLabel").innerHTML = score;
+}
+
+function decreaseScore(s){
+	score-=s;
+	$("#scoreLabel").html(score.toString());
+}
+
+function decreaseLives(){
+	lives--;
+	drawLives();
+}
+
+function increaseLives(){
+	lives++;
+	drawLives();
+}
+
+function drawLives(){
+	$("#livesDiv").html("");
+	for(let i=0;i<lives;i++){
+		let img=new Image(20,30);
+		img.src="Img/live.png";
+		document.getElementById("livesDiv").appendChild(img);
+	}
 }
 
 function toDelete(){
