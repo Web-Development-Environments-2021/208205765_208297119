@@ -27,8 +27,11 @@ let sizeX = 900 / board.length;
 let sizeY;
 let ghostsPositions=[];
 let ghostsArr=[];
+let ghostWidth = 50;
+let ghostHeigh = 40;
+let ghostSpeed = 4;
 let countCandy = 0;
-let radiusCandys = {5:4, 15:8, 25:13};
+let radiusCandys = {5:12, 15:8, 25:4};
 
 $(document).ready(function(){
 	ctx=document.getElementById("myCanvas").getContext("2d");
@@ -552,8 +555,6 @@ function main(){
 	}
 	drawGhosts();
 	changeGhostsLocations();
-
-	
 }
 
 function drawCherry(){
@@ -675,9 +676,9 @@ document.addEventListener('keydown', function (event) {
   });
 
 function checkWall(x, y){
-	if (x > 899 || x < 0)
+	if (x >= 900 || x <= 0)
 		return true;
-	if (y > 449 || y < 0)
+	if (y >= 450 || y <= 0)
 		return true;
 	if (board[Math.floor(x / 60)][Math.floor(y / 45)] == 1)
 		return true;
@@ -698,20 +699,20 @@ function touchCandy(){
 }
 
 function pacmanContact(x, y, width, heigh){
-	if (pacX - pacRadius < x && x < pacX + pacRadius)
-		if (pacY - pacRadius < y && y < pacY + pacRadius)
+	if (pacX - pacRadius <= x && x <= pacX + pacRadius)
+		if (pacY - pacRadius <= y && y <= pacY + pacRadius)
 			return true;
 
-	if (pacX - pacRadius < x + width && x + width < pacX + pacRadius)
-		if (pacY - pacRadius < y && y < pacY + pacRadius)
+	if (pacX - pacRadius <= x + width && x + width <= pacX + pacRadius)
+		if (pacY - pacRadius <= y && y <= pacY + pacRadius)
 			return true;
 		
-	if (pacX - pacRadius < x && x < pacX + pacRadius)
-		if (pacY - pacRadius < y + heigh && y + heigh < pacY + pacRadius)
+	if (pacX - pacRadius <= x && x <= pacX + pacRadius)
+		if (pacY - pacRadius <= y + heigh && y + heigh <= pacY + pacRadius)
 			return true;
 		
-	if (pacX - pacRadius < x + width && x + width < pacX + pacRadius)
-		if (pacY - pacRadius < y + heigh && y + heigh < pacY + pacRadius)
+	if (pacX - pacRadius <= x + width && x + width <= pacX + pacRadius)
+		if (pacY - pacRadius <= y + heigh && y + heigh <= pacY + pacRadius)
 			return true;
 		
 	return false;
@@ -821,7 +822,7 @@ function drawGhosts(){
 	for(let i=0;i<ghostsArr.length;i++){
 		let image=new Image();
 		image.src=ghostsArr[i];
-		ctx.drawImage(image,ghostsPositions[i][0],ghostsPositions[i][1],50,40);
+		ctx.drawImage(image,ghostsPositions[i][0], ghostsPositions[i][1], ghostWidth, ghostHeigh);
 	}
 }
 
@@ -875,6 +876,14 @@ function changeGhostsLocations(){
 
 function decideIfGoInThisDirection(originalManhatanDistance,ghostX,ghostY){
 	if(!checkWall(ghostX,ghostY)){
+
+		// if ghost want go this is the condition:
+		// need to change "ghostSpeed"
+		// up - checkWall(ghostX, ghostY-ghostSpeed) || checkWall(ghostX+ghostWidth, ghostY-ghostSpeed)
+		// down - checkWall(ghostX, ghostY+ghostSpeed+ghostHeigh) || checkWall(ghostX+ghostWidth, ghostY+ghostSpeed+ghostHeigh)
+		// right - checkWall(ghostX+ghostSpeed+ghostWidth, ghostY) || checkWall(ghostX+ghostSpeed+ghostWidth, ghostY+ghostHeigh)
+		// left - checkWall(ghostX-ghostSpeed, ghostY) || checkWall(ghostX-ghostSpeed, ghostY+ghostHeigh)
+
 		newManhatanDistance=Math.abs(ghostX-pacX)+Math.abs(ghostY-pacY);
 		if(newManhatanDistance<originalManhatanDistance){
 			return true;
