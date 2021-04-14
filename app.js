@@ -875,12 +875,12 @@ function initGhostsArr(){
 			case 3:
 				ghostsArr.push("Img/ghost1.png");
 				ghostsArr.push("Img/ghost2.png");
-				ghostsArr.push("Img/ghost3.jpg");
+				ghostsArr.push("Img/ghost3.png");
 				break;
 			case 4:
 				ghostsArr.push("Img/ghost1.png");
 				ghostsArr.push("Img/ghost2.png");
-				ghostsArr.push("Img/ghost3.jpg");
+				ghostsArr.push("Img/ghost3.png");
 				ghostsArr.push("Img/ghost4.png");
 				break;		
 		default:
@@ -977,7 +977,10 @@ function changeScore(s){
 	document.getElementById("scoreLabel").innerHTML = score;
 }
 
-
+function decreaseLives(){
+	lives--;
+	drawLives();
+}
 
 function increaseLives(){
 	lives++;
