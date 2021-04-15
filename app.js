@@ -26,13 +26,13 @@ let cherrySpeedY = 5;
 let sizeX = 900 / board.length;
 let sizeY;
 let ghostsPositions=[];
-let ghostsArr=[];
+let ghostsArr;
 let ghostWidth = 50;
 let ghostHeigh = 40;
 let ghostSpeed = 1;
 let countCandy = 0;
 let radiusCandys = {5:12, 15:8, 25:4};
-let backgroundSong=new Audio("OpeningMusic.mp3");
+let backgroundSong=new Audio("Beethoven-Symphony5.mp3");
 let lives=5;
 
 $(document).ready(function(){
@@ -567,7 +567,7 @@ function startGame(){
 	score=0;
 	$("#scoreLabel").html("0");
 	backgroundSong.loop=true;
-	backgroundSong.play();
+	//backgroundSong.play();
 	generateBoard();
 	initPacmanPosition();
 	initCherry();
@@ -595,7 +595,7 @@ function main(){
 	drawCherry();
 	if (pacmanContact(cherryX, cherryY, 50, 40)){
 		initCherry();
-		increaseScore(50);
+		changeScore(50);
 	}
 	drawGhosts();
 	changeGhostsLocations();
@@ -720,9 +720,9 @@ document.addEventListener('keydown', function (event) {
   });
 
 function checkWall(x, y){
-	if (x >= 900 || x <= 0)
+	if (x > 900 || x < 0)
 		return true;
-	if (y >= 450 || y <= 0)
+	if (y > 450 || y < 0)
 		return true;
 	if (board[Math.floor(x / 60)][Math.floor(y / 45)] == 1)
 		return true;
@@ -736,7 +736,7 @@ function touchCandy(){
 		return;
 	
 	if (pacmanContact(i*sizeX + sizeX/2, j*sizeY + sizeY/2, radiusCandys[board[i][j]]*2, radiusCandys[board[i][j]]*2)){
-		increaseScore(board[i][j]);
+		changeScore(board[i][j]);
 		board[i][j] = 0;
 		countCandy++;
 	}
@@ -863,24 +863,25 @@ function finishGame(){
 }
 
 function initGhostsArr(){
+	ghostsArr = [];
 	switch (monstersNumber) {
 		case 1:
 			ghostsArr.push("Img/ghost1.png");
 			break;
 			case 2:
 				ghostsArr.push("Img/ghost1.png");
-				ghostsArr.push("Img/ghost2.jpg");
+				ghostsArr.push("Img/ghost2.png");
 				break;
 			case 3:
 				ghostsArr.push("Img/ghost1.png");
-				ghostsArr.push("Img/ghost2.jpg");
-				ghostsArr.push("Img/ghost3.jpg");
+				ghostsArr.push("Img/ghost2.png");
+				ghostsArr.push("Img/ghost3.png");
 				break;
 			case 4:
 				ghostsArr.push("Img/ghost1.png");
-				ghostsArr.push("Img/ghost2.jpg");
-				ghostsArr.push("Img/ghost3.jpg");
-				ghostsArr.push("Img/ghost4.jpg");
+				ghostsArr.push("Img/ghost2.png");
+				ghostsArr.push("Img/ghost3.png");
+				ghostsArr.push("Img/ghost4.png");
 				break;		
 		default:
 			break;
@@ -892,69 +893,98 @@ function drawGhosts(){
 	for(let i=0;i<ghostsArr.length;i++){
 		let image=new Image();
 		image.src=ghostsArr[i];
-		ctx.drawImage(image,ghostsPositions[i][0], ghostsPositions[i][1], ghostWidth, ghostHeigh);
+		ctx.drawImage(image, ghostsPositions[i][0], ghostsPositions[i][1], ghostWidth, ghostHeigh);
 	}
 }
 
 function changeGhostsLocations(){
-	for(let j=0;j<ghostsPositions.length;j++){
+	for(let j=0;j<ghostsArr.length;j++){
 		let ghostX=ghostsPositions[j][0];
 		let ghostY=ghostsPositions[j][1];
-		originalManhatanDistance=Math.abs(ghostX-pacX)+Math.abs(ghostY-pacY);
-		let availableDirections = [];
+		let availableDirectionsX = [];
+		let availableDirectionsY = [];
 
 		if (!(checkWall(ghostX, ghostY-ghostSpeed) || checkWall(ghostX+ghostWidth, ghostY-ghostSpeed)))
-			availableDirections.push("up");
+			availableDirectionsY.push("up");
 		if (!(checkWall(ghostX, ghostY+ghostSpeed+ghostHeigh) || checkWall(ghostX+ghostWidth, ghostY+ghostSpeed+ghostHeigh)))
-			availableDirections.push("down");
+			availableDirectionsY.push("down");
 		if (!(checkWall(ghostX-ghostSpeed, ghostY) || checkWall(ghostX-ghostSpeed, ghostY+ghostHeigh)))
-			availableDirections.push("left");
+			availableDirectionsX.push("left");
 		if (!(checkWall(ghostX+ghostSpeed+ghostWidth, ghostY) || checkWall(ghostX+ghostSpeed+ghostWidth, ghostY+ghostHeigh)))
-			availableDirections.push("rigth");
-		// choice direction Arr: [min distance, choiceDirection, new x, new y]
-		let choiceArr = [9999999999999, "up", ghostX, ghostY];
-		let newDist = 9999999999999 + 1;
+			availableDirectionsX.push("right");
 
-		for(let i=0;i<availableDirections.length;i++){
-			switch (availableDirections[i]){
+		let newDist = 1;
+		let minX = ghostX;
+		let minY = ghostY;
+		let bestDistanceX = 99999999999;
+		let bestDistanceY = 99999999999;
+
+		for(let i=0;i<availableDirectionsY.length;i++){
+			switch (availableDirectionsY[i]){
 				case "up":
-					newDist = Math.abs(ghostX-pacX)+Math.abs(ghostY-ghostSpeed-pacY);
-					if (newDist < choiceArr[0]){
-						choiceArr = [newDist, "up", ghostX, ghostY-ghostSpeed];
+					newDist = Math.abs(ghostY-ghostSpeed-pacY);
+					if (newDist < bestDistanceY){
+						minY = ghostY - ghostSpeed;
+						bestDistanceY = newDist;
 					}
 					break;
 				case "down":
-					newDist = Math.abs(ghostX-pacX)+Math.abs(ghostY+ghostSpeed-pacY);
-					if (newDist < choiceArr[0]){
-						choiceArr = [newDist, "down", ghostX, ghostY+ghostSpeed];
-					}
-					break;
-				case "left":
-					newDist = Math.abs(ghostX-ghostSpeed-pacX)+Math.abs(ghostY-pacY);
-					if (newDist < choiceArr[0]){
-						choiceArr = [newDist, "left", ghostX-ghostSpeed, ghostY];
-					}
-					break;
-				case "right":
-					newDist = Math.abs(ghostX+ghostSpeed-pacX)+Math.abs(ghostY-pacY);
-					if (newDist < choiceArr[0]){
-						choiceArr = [newDist, "right", ghostX+ghostSpeed, ghostY];
+					newDist = Math.abs(ghostY+ghostSpeed-pacY);
+					if (newDist < bestDistanceY){
+						minY = ghostY + ghostSpeed;
+						bestDistanceY = newDist;
 					}
 					break;
 				default:
 					break;
 			}
 		}
-		ghostsPositions[j] = [choiceArr[2], choiceArr[3]];
+
+		for(let i=0;i<availableDirectionsX.length;i++){
+			switch (availableDirectionsX[i]){
+				case "left":
+					newDist = Math.abs(ghostX-ghostSpeed-pacX);
+					if (newDist < bestDistanceX){
+						minX = ghostX - ghostSpeed;
+						bestDistanceX = newDist;
+					}
+					break;
+				case "right":
+					newDist = Math.abs(ghostX+ghostSpeed-pacX);
+					if (newDist < bestDistanceX){
+						minX = ghostX + ghostSpeed;
+						bestDistanceX = newDist;
+					}
+					break;
+				default:
+					break;
+			}
+		}
+		ghostsPositions[j] = [minX, minY];
+		if (pacmanContact(minX, minY, ghostWidth, ghostHeigh)){
+			changeScore(-10);
+			decreaseLives();
+			initPacmanPosition();
+			initGhostPositions();
+			initGhostsArr();
+		}
 	}
 }
 	
-
-function increaseScore(s){
+function changeScore(s){
+	// change the score of the game by s
 	score += s;
 	document.getElementById("scoreLabel").innerHTML = score;
 }
 
+<<<<<<< HEAD
+=======
+function decreaseLives(){
+	lives--;
+	drawLives();
+}
+
+>>>>>>> origin/master
 function increaseLives(){
 	lives++;
 	drawLives();
