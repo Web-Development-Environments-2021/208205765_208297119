@@ -34,6 +34,7 @@ let countCandy = 0;
 let radiusCandys = {5:12, 15:8, 25:4};
 let backgroundSong=new Audio("Beethoven-Symphony5.mp3");
 let lives=5;
+let gameStopped=false;
 
 $(document).ready(function(){
 	ctx=document.getElementById("myCanvas").getContext("2d");
@@ -1032,6 +1033,18 @@ function closeAbout(){
 window.onclick=function(event){
 	if(event.target==document.getElementById("modalDiv")){
 		closeAbout();
+	}
+}
+
+function stopGame(){
+	stopGamesIntervals();
+	gameStopped=true;
+}
+
+function resumeGame(){
+	if(gameStopped){
+		setGameIntervals();
+		gameStopped=false;
 	}
 }
 
