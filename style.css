@@ -93,19 +93,23 @@ html,body{
 .submitButtons{
   font-size: 25px;
   cursor: pointer;
-  background-color: #4CAF50;
-  border-radius: 15%;
+  background-color:orange;
+  border-radius: 5%;
   color: white;
-  column-span: all;
-  
-}
+ }
 
-/* #registerDiv{
-  display: none;
-  flex-grow: 1;
-  margin-left: 1%;
-  margin-top: 1%;
-} */
+ .submitButtons:hover{
+   background-color: rgb(14, 151, 10);
+ }
+
+ .errorFormRow{
+  display: none; 
+  color: red;
+  font-weight: bold;
+  font-size: 30px;
+  font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+ }
+
 
 .errorRow{
   display: none;
@@ -122,6 +126,13 @@ html,body{
   display: none;
   flex-grow: 1;
   flex-direction: row;
+  background-color: rgb(215, 238, 11);
+}
+
+#settingsDiv{
+  display: none;
+  justify-content: center;
+  align-items: center;
 }
 
 #informationDiv{
@@ -134,13 +145,41 @@ html,body{
   flex-direction: column;
 }
 .forems{
-  display: none;
-  flex-grow: 1;
- justify-content: center;
+  display: flex;
+  justify-content: center;
  align-items: center;
  flex-direction: column;
+ margin: 0 auto;
+}
+
+.formDiv{
+  display: flex;
+  flex-direction: column;
+}
+
+.formInput{
+  font-size: 30px;
+  font-weight: bold;
+  margin-bottom: 2%;
  
 }
+
+.formHeader{
+  font-weight: bold;
+   font-style: italic;
+    margin-bottom: 5%;
+     font-size: 50px;
+      margin-bottom: 3%;
+       color: white;
+}
+
+.outerRegisterAndLogInDiv{
+  display: none;
+  flex-grow: 1;
+  align-items: center;
+  justify-content: center;
+  background-color: rgb(26, 69, 134);
+ }
 
 .regLabels{
   font-size: 30px;
