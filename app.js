@@ -1023,7 +1023,7 @@ function aboutScreen(){
 
 function closeAbout(){
 	if(currentDisplayedDiv=="#gameAndSettingsDiv"){
-		if(document.getElementById("gameDiv").style.display!="none"){
+		if(document.getElementById("gameDiv").style.display!="none" && !gameStopped){
 			setGameIntervals();
 		}
 	}
