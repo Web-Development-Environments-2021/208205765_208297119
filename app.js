@@ -39,6 +39,16 @@ let gameStopped=false;
 $(document).ready(function(){
 	ctx=document.getElementById("myCanvas").getContext("2d");
 	$("#submitButton").click(validateDataAfterRegistretion);
+	let slider=document.getElementById("ballsSlider");
+	let ballsValue=document.getElementById("ballsValue");
+	slider.oninput=function(){
+		ballsValue.innerHTML=this.value;
+	}
+	let monstersSlider=document.getElementById("monstersSlider");
+	let monstersValue=document.getElementById("monstersNumber");
+	monstersSlider.oninput=function(){
+		monstersValue.innerHTML=this.value;
+	}
 	});
 
 function validateDataAfterRegistretion(){
@@ -80,6 +90,10 @@ function validateDataAfterRegistretion(){
 		validRegisterData=false;
 	}
 	let birthDate=$("#birthDate").val();
+	if(birthDate==""){
+		showErrorMessage("#birthDateError","Empty birthdate");
+		validRegisterData=false;
+	}
 	if(validRegisterData){
 		usersDict[userName]=[password, fullName, email, birthDate];
 		loggedUser=userName;
@@ -183,6 +197,7 @@ function showWelcomeScreen(){
 
 function showSettings(){
 	document.getElementById("settingsForm").reset();
+	changeSettingsReadOnlyPrperty(false);
 	switchDivs("#gameAndSettingsDiv","flex");
 	$("#settingsDiv").css("display","block");
 	$("#gameDiv").css("display","none");
@@ -241,32 +256,25 @@ function validateSettings(){
 	let keyDown=$("#keyDown").val();
 	let keyLeft=$("#keyLeft").val();
 	let keyRight=$("#keyRight").val();
-	let numberOfBalls=$("#numberOfBalls").val();
+	let numberOfBalls=$("#ballsSlider").val();
 	let fivePointsBallColor=$("#fivePointsColorPicker").val();
 	let fifteenPointsColorPicker=$("#fifteenPointsColorPicker").val();
 	let twentyFivePointsColorPicker=$("#twentyFivePointsColorPicker").val();
 	let gameTime=$("#gameTimeInput").val();
-	let numberOfMonsters=$("#monstersPicker").val();
+	let numberOfMonsters=$("#monstersSlider").val();
 	checkKeysSettings(keyup,keyDown,keyLeft,keyRight);
-	checkNumericValuesSettings(numberOfBalls,gameTime,numberOfMonsters);
+	if(checkSingleNumericValue(gameTime,60,0,"#gameTimeError","","Game time must be at least 60 seconds!")){
+		timeOfGame=parseInt(gameTime);
+	}
 	if(validSettingsData){
 		ballsColors["5"]=fivePointsBallColor;
 		ballsColors["15"]=fifteenPointsColorPicker;
 		ballsColors["25"]=twentyFivePointsColorPicker;
+		ballsNumber=parseInt(numberOfBalls);
+		monstersNumber=parseInt(numberOfMonsters);
+		changeSettingsReadOnlyPrperty(true);
 		startGame();
 		$("#gameDiv").css("display","flex");
-	}
-}
-
-function checkNumericValuesSettings(numberOfBalls,gameTime,numberOfMonsters){
-	if(checkSingleNumericValue(numberOfBalls,50,90,"#errorBallsNumber","Number of balls must be a number","Number of balls must be between 50 to 90")){
-		ballsNumber=parseInt(numberOfBalls);
-	}
-	if(checkSingleNumericValue(gameTime,60,0,"#gameTimeError","","Game time must be at least 60 seconds!")){
-		timeOfGame=parseInt(gameTime);
-	}
-	if(checkSingleNumericValue(numberOfMonsters,1,4,"#monstersNumberError","Monsters number must be a number","Monsters number must be between 1 to 4")){
-		monstersNumber=parseInt(numberOfMonsters);
 	}
 }
 
@@ -347,12 +355,14 @@ function updateSettingsValues(){
 	$("#keyDown").val("ArrowDown");
 	$("#keyLeft").val("ArrowLeft");
 	$("#keyRight").val("ArrowRight");
-	$("#numberOfBalls").val(ballsNumber.toString());
+	$("#ballsSlider").val(ballsNumber.toString());
 	$("#fivePointsColorPicker").val(ballsColors["5"]);
 	$("#fifteenPointsColorPicker").val(ballsColors["15"]);
 	$("#twentyFivePointsColorPicker").val(ballsColors["25"]);
 	$("#gameTimeInput").val(timeOfGame.toString());
-	$("#monstersPicker").val(monstersNumber.toString());
+	$("#monstersSlider").val(monstersNumber.toString());
+	document.getElementById("ballsValue").innerHTML=ballsNumber;
+	document.getElementById("monstersNumber").innerHTML=monstersNumber;
 }
 
 
@@ -366,89 +376,6 @@ function generateBoard(){
 	}
 	sizeY=450 / board[0].length;
 	setWallsOnBoard();
-	// let randomStartRow=Math.floor(Math.random()*board.length);
-	// let randomStartColumn=Math.floor(Math.random()*board[0].length);
-	// board[randomStartRow][randomStartColumn]=0;
-	// let numberOfFreeCells=1;
-	// let stack=[[randomStartRow,randomStartColumn]];
-	// while(stack.length!=0){
-	// 	let position=stack.pop();
-	// 	let currentRow=position[0];
-	// 	let currentColumn=position[1];
-	// 	let directions=createDirections();
-	// 	(function(){
-	// 	for(let i=0;i<directions.length;i++){
-	// 		switch (directions[i]) {
-	// 			case 1://up
-	// 				if(currentRow-2>-1 && board[currentRow-2][currentColumn]==1){
-	// 					board[currentRow-1][currentColumn]=0;
-	// 					board[currentRow-2][currentColumn]=0;
-	// 					numberOfFreeCells+=2;
-	// 					stack.push([currentRow,currentColumn]);
-	// 					stack.push([currentRow-2,currentColumn]);
-	// 					return;
-	// 				}
-	// 				break;
-
-	// 			case 2://down
-	// 				if(currentRow+2<board.length && board[currentRow+2][currentColumn]==1){
-	// 					board[currentRow+2][currentColumn]=0;
-	// 					board[currentRow+1][currentColumn]=0;
-	// 					numberOfFreeCells+=2;
-	// 					stack.push([currentRow,currentColumn]);
-	// 					stack.push([currentRow+2,currentColumn]);
-	// 					return;
-	// 				}
-	// 				break;
-
-	// 			case 3://left
-	// 				if(currentColumn-2>-1 && board[currentRow][currentColumn-2]==1){
-	// 					board[currentRow][currentColumn-2]=0;
-	// 					board[currentRow][currentColumn-1]=0;
-	// 					numberOfFreeCells+=2;
-	// 					stack.push([currentRow,currentColumn]);
-	// 					stack.push([currentRow,currentColumn-2]);
-	// 					return;
-	// 				}
-	// 				break;
-
-	// 			case 4://right
-	// 				if(currentColumn+2<board[0].length && board[currentRow][currentColumn+2]==1){
-	// 					board[currentRow][currentColumn+2]=0;
-	// 					board[currentRow][currentColumn+1]=0;
-	// 					numberOfFreeCells+=2;
-	// 					stack.push([currentRow,currentColumn]);
-	// 					stack.push([currentRow,currentColumn+2]);
-	// 					return;
-	// 				}
-	// 				break;
-
-	// 			default:
-	// 				break;
-	// 		}
-	// 	}
-	// })();
-	// }
-	// numberOfFreeCells=setCornersToFree(numberOfFreeCells);
-	// if(numberOfFreeCells<ballsNumber){
-	// 	let breaked=false;
-	// 	for(let i=0;i<board.length;i++){
-	// 		for(let j=0;j<board[0].length;j++){
-	// 			if(board[i][j]==1){
-	// 				board[i][j]=0;
-	// 				numberOfFreeCells++;
-	// 			}
-	// 			if(numberOfFreeCells==ballsNumber){
-	// 				breaked=true;
-	// 				break;
-	// 			}
-	// 		}
-	// 		if(breaked){
-	// 			break;
-	// 		}
-	// 	}
-		
-	// }
 	setBallsOnBoard();
 	$("#settingsButton").css("display","none");
 	$("#randomButton").css("display","none");
@@ -1008,6 +935,7 @@ function drawLives(){
 	for(let i=0;i<lives;i++){
 		let img=new Image(20,30);
 		img.src="Img/live.png";
+		img.className="liveImage";
 		document.getElementById("livesDiv").appendChild(img);
 	}
 }
@@ -1046,6 +974,28 @@ function resumeGame(){
 		setGameIntervals();
 		gameStopped=false;
 	}
+}
+
+function changeSettingsReadOnlyPrperty(addReadOnly){
+	if(addReadOnly){
+		let gameAndSettingsDiv=document.getElementById("gameAndSettingsDiv");
+		gameAndSettingsDiv.style.removeProperty("justify-content");
+		gameAndSettingsDiv.style.removeProperty("align-items");
+	}
+	else{
+		$("#gameAndSettingsDiv").css("justify-content","center");
+		$("#gameAndSettingsDiv").css("align-items","center");
+	}
+	document.getElementById("keyUp").disabled=addReadOnly;
+	document.getElementById("keyDown").disabled=addReadOnly;
+	document.getElementById("keyLeft").disabled=addReadOnly;
+	document.getElementById("keyRight").disabled=addReadOnly;
+	document.getElementById("fivePointsColorPicker").disabled=addReadOnly;
+	document.getElementById("fifteenPointsColorPicker").disabled=addReadOnly;
+	document.getElementById("twentyFivePointsColorPicker").disabled=addReadOnly;
+	document.getElementById("gameTimeInput").readOnly=addReadOnly;
+	document.getElementById("ballsSlider").disabled=addReadOnly;
+	document.getElementById("monstersSlider").disabled=addReadOnly;
 }
 
 function toDelete(){

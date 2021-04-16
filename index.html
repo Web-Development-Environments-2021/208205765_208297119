@@ -4,13 +4,13 @@
 		<link rel='stylesheet' type='text/css'  href='./style.css' />
 		<script src="./jquery-3.4.1.slim.min.js"></script>
 		<script type="text/javascript" src="./app.js"></script>
-	
+		<meta name="viewport" content="width=device-width, initial-scale=1">
 	</head>
 
 	<body>
 		<div id="outer">
 		<div class="header">
-			<img src="Img/pacman logo black background.jpg" style="height: 100px; width: 250px;"/>
+			<img src="Img/pacman_logo_white_background-removebg-preview.png" style="height: 100px; width: 250px; float: left;"/>
 			<label id="appName"> Packman 2021</label>
 			<label id="submittersDetails"> Ron Tyntarev:208205765, Tomer Aizikovich:208297119</label>
 		</div>
@@ -23,7 +23,7 @@
 			<a onclick="stopTimer()" >Stop Game</a>
 		</div>
 		<div id="welcomeContainer">
-			<img src="Img/pacman logo white background.png" style="height: 350px; width: 550px; margin-left: 25%; margin-right: 25%;">
+			<img src="Img/pacman_logo_white_background-removebg-preview.png" style="height: 350px; width: 550px; margin-left: 25%; margin-right: 25%;">
 			<div id="buttonsContainer">
 				<button id="registerButton" class="welcomeButtons" onclick="register()">Register</button>
 				<button id="logInButton" class="welcomeButtons" style="display: inline-flex; align-items: flex-end;" onclick="logIn()">Log In</button>
@@ -44,6 +44,7 @@
 				<input type="text" id="email" name="email" placeholder="email" class="formInput">
 				<label class="errorFormRow" id="errorEmailReg"></label>
 				<input type="date" id="birthDate" name="birthDate" class="formInput">
+				<label class="errorFormRow" id="birthDateError"></label>
 				<button type="submit" id="submitButton" class="submitButtons" >Register</button>
 			</div>
 				</form>
@@ -65,35 +66,35 @@
 		</div>
 	</div>
 		<div id="gameAndSettingsDiv">
-			<div id="gameDiv">
-				<div id="userInfoDiv">
-					<label>Playing user:</label>
+			<div id="gameDiv" class="divs">
+				<div id="userInfoDiv" class="gameDivs">
+					<label class="informationLabels">Playing user:</label>
 				<label id="userNameToShow"></label>
 			</div>
-				<div id="informationDiv">
+				<div id="informationDiv" class="gameDivs">
 					<label class="informationLabels">Time:</label>
-					<label id="timeLabel">0</label>
+					<label class="informationValues" id="timeLabel">0</label>
 					<label class="informationLabels">Score:</label>
-					<label id="scoreLabel">0</label>
+					<label class="informationValues" id="scoreLabel">0</label>
 					<label class="informationLabels">Lives:</label>
-					<div id="livesDiv" style="display: flex; flex-direction: row;"></div>
+					<div id="livesDiv" style="display: inline-block;"></div>
 				</div>
-				<div id="gameBoardDiv">						
+				<div id="gameBoardDiv" class="gameDivs">						
 					<canvas id="myCanvas" width="900" height="450" style="border:1px solid #d3d3d3;"></canvas>
 					<img src="Img/white.png">
 				</div>
 				<div>
-					<button id="newGameButton" onclick="showSettings()">Start new game</button>
-					<button onclick="stopGame()">Pause game</button>
-					<button onclick="resumeGame()">Resume game</button>
+					<button class="gameButtons" id="newGameButton" onclick="showSettings()">Start new game</button>
+					<button class="gameButtons" onclick="stopGame()">Pause game</button>
+					<button class="gameButtons" onclick="resumeGame()">Resume game</button>
 				</div>
 				
 			</div>
-			<div id="settingsDiv">
-				<h3 style="margin-bottom: 3%; font-weight: bold;">Please set your settings:</h3>
+			<div id="settingsDiv" class="divs">
+				<h3 style="margin-bottom: 3%; font-weight: bold; text-align: center; font-size: 40px;font-style: italic; text-decoration: underline; color: darkred;">Please set your settings:</h3>
 				<br/>
 				<form onsubmit="return false;" id="settingsForm">
-				<table style="font-weight: bold;">
+				<table style="font-weight: bold; font-size: 30px; color:rgb(11, 76, 95);">
 					<tr>
 						<td>Key Up:</td>
 						<td><input id="keyUp" name="keyUp" type="text" readonly placeholder="Press any key"></td>
@@ -124,10 +125,11 @@
 					</tr>
 					<tr>
 						<td>Number of balls in the game:</td>
-						<td><input type="text" placeholder="from 50 to 90" id="numberOfBalls"></td>
+						<td><input id="ballsSlider" type="range" class="slider" min="50" max="90" value="60"></td>
 					</tr>
-					<tr id="errorBallsNumber" class="errorRow">
-						<td></td>
+					<tr>
+						<td>Value:</td>
+						<td><span id="ballsValue">60</span></td>
 					</tr>
 					<tr>
 						<td>Color for 5 points balls:</td>
@@ -150,12 +152,18 @@
 					</tr>
 					<tr>
 						<td>Number of monsters:</td>
-						<td><input type="text" id="monstersPicker" placeholder="Min 1, Max 4"></td>
+						<td><input type="range" id="monstersSlider" class="slider" min="1" max="4" value="2"></td>
 					</tr>
-					<tr class="errorRow" id="monstersNumberError"><td></td></tr>
 					<tr>
-						<td><button id="settingsButton" onclick="validateSettings()">Save settings</button></td>
-						<td ><button id="randomButton" onclick="generateRandomSettings()" >Generate random settings</button></td>
+						<td>Value:</td>
+						<td><span id="monstersNumber">2</span></td>
+					</tr>
+					<tr>
+						<td colspan="2">
+							<button class="settingsButtons" id="settingsButton" onclick="validateSettings()">Save settings</button>
+							<button class="settingsButtons" id="randomButton" onclick="generateRandomSettings()" >Generate random settings</button>
+							</td>
+						
 					</tr>
 				</table>
 			</form>

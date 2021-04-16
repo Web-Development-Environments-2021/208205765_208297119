@@ -5,8 +5,7 @@ html,body{
   width: 100%;
 }
 .header{
-  display: flex;
-  flex-direction: row;
+  display: block;
   width: 100%;
   height: 10%;
   background-color: #333;
@@ -17,7 +16,7 @@ html,body{
   font-size: 1.5vw;
   float: right;
   color: white;
-  margin-left: 2%;
+  margin-right: 2%;
   margin-top: 2%;
 }
 
@@ -28,6 +27,7 @@ html,body{
   color: white;
   margin-top: 2%;
   margin-left: 2%;
+  float: left;
   }
 
 
@@ -66,7 +66,7 @@ html,body{
  align-items: center;
  justify-content: center;
  padding-top: 2%;
- 
+ background-image: linear-gradient(to bottom right,rgb(9, 216, 102),rgba(215, 236, 24, 0.596));
 }
 
 #buttonsContainer{
@@ -81,6 +81,11 @@ html,body{
   background-color: blanchedalmond;
   font-size: 36px;
   margin-right: 1%;
+  border-radius: 7px;
+}
+
+.welcomeButtons:hover{
+  background-color: orange;
 }
 
 #outer{
@@ -126,8 +131,8 @@ html,body{
   display: none;
   flex-grow: 1;
   flex-direction: row;
-  background-color: rgb(215, 238, 11);
-}
+  background-image: linear-gradient(to right, rgb(0,150,200),rgb(212, 151, 18));
+  }
 
 #settingsDiv{
   display: none;
@@ -143,7 +148,10 @@ html,body{
 #gameDiv{
   display: none;
   flex-direction: column;
+  font-size: 25px;
+ 
 }
+
 .forems{
   display: flex;
   justify-content: center;
@@ -241,4 +249,81 @@ html,body{
 
 }
 
+.slider {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 15px;
+  border-radius: 5px;
+  background: #d3d3d3;
+  outline: none;
+  opacity: 0.7;
+  -webkit-transition: .2s;
+  transition: opacity .2s;
+}
 
+.slider:hover {
+  opacity: 1;
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  background: #4CAF50;
+  cursor: pointer;
+}
+
+.slider::-moz-range-thumb {
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  background: #4CAF50;
+  cursor: pointer;
+}
+
+.settingsButtons{
+  background-color: #4CAF50;
+  font-size: 20px;
+  border-radius: 12px;
+  float: left;
+  margin-right: 2%;
+}
+
+.settingsButtons:hover{
+  background-color: gray;
+}
+
+.divs{
+  margin-right: 2%;
+}
+
+.gameDivs{
+  margin-bottom: 1%;
+}
+
+.gameButtons{
+  background-color: #dd4a6f;
+  font-size: 24px;
+  border-radius: 4px;
+  color: #cadb31;
+}
+
+.gameButtons:hover{
+  background-color: green;
+}
+
+.liveImage{
+  float: left;
+}
+
+.informationLabels{
+  font-weight: bold;
+  color: rgb(247, 16, 93);
+  margin-right: 2%;
+}
+
+.informationValues{
+  margin-right: 2%;
+}
