@@ -503,7 +503,6 @@ function startGame(){
 	initGhostPositions();
 	initGhostsArr();
 	setGameIntervals();
-	drawLives();
 	pacSpeed = 4;
 	medicationDifficulty = 2;
 	initMedicationPosition(medicationDifficulty);
@@ -1019,7 +1018,13 @@ function changeScore(s){
 
 function changeLives(num){
 	lives += num;
-	drawLives();
+	if(lives==0){
+		stopGamesIntervals();
+		alert("Loser!");
+	}
+	else{
+		drawLives();
+	}
 }
 
 function drawLives(){
