@@ -682,6 +682,10 @@ function touchCandy(){
 		changeScore(board[i][j]);
 		board[i][j] = 0;
 		countCandy++;
+		if(countCandy==ballsNumber){
+			stopGamesIntervals();
+			finishGame();
+		}
 	}
 }
 
@@ -773,7 +777,7 @@ function setGameTimer(){
 			$("#timeLabel").css("color","red");
 		}
 		if(timeOfGame==0){
-			clearInterval(timer);
+			stopGamesIntervals();
 			finishGame();
 		}
 	},1000);
