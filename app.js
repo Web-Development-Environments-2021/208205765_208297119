@@ -612,6 +612,51 @@ function main(){
 	angle = swicthAngle * 0.02 + angle;
 }
 
+/**
+ * This function sets the timer for game
+ */
+ function setGameTimer(){
+	setGameTimeLabel();
+	$("#timeLabel").css("color","black");
+	let timer=setInterval(function(){
+		timeOfGame--;
+		setGameTimeLabel();
+		if(timeOfGame>0 && timeOfGame<10){
+			$("#timeLabel").css("color","red");
+		}
+		if(timeOfGame==0){
+			clearInterval(timer);
+			finishGame();
+		}
+	},1000);
+	gameIntervals.push(timer);
+}
+
+function setGameTimeLabel(){
+	let minutes=0;
+	let time=timeOfGame;
+	while(time>=60){
+		minutes++;
+		time-=60;
+	}
+	if(time<10){
+		$("#timeLabel").html("0"+minutes+":0"+time.toString());
+	}
+	else{
+		$("#timeLabel").html("0"+minutes+":"+time.toString());
+	}
+	
+}
+
+function finishGame(){
+	if(score<100){
+		alert("You are better than "+score.toString()+" points!");
+	}
+	else{
+		alert("Winner!!!");
+	}
+}
+
 function drawCherry(){
 	cherryX += cherrySpeedX;
 	cherryY += cherrySpeedY;
@@ -625,6 +670,23 @@ function drawCherry(){
 	let img = new Image();
 	img.src = "Img/cherry.png";
 	ctx.drawImage(img, cherryX, cherryY, 50, 40);
+}
+
+function initCherry(){
+	//choose random point and direction start for the cherry
+	cherryX = Math.floor(Math.random() * 800) + 50;
+	cherryY = Math.floor(Math.random() * 400) + 25;
+
+	let cherrySpeed = 5;
+	if (Math.random() > 0.5)
+		cherrySpeedX = cherrySpeed;
+	else
+		cherrySpeedX = -1 * cherrySpeed;
+
+	if (Math.random() > 0.5)
+		cherrySpeedY = cherrySpeed;
+	else
+		cherrySpeedY = -1 * cherrySpeed;
 }
 
 function drawMap(){
@@ -648,25 +710,6 @@ function drawMap(){
 			}				
 		}
 	}
-}
-
-function drawMedication(){
-	if (medicationTime <= medicationTimeTolive){
-		let img = new Image();
-		img.src = "Img/drug.jpg";
-		ctx.drawImage(img, medicationX, medicationY, 50, 40);
-		
-		if (pacmanContact(medicationX, medicationY, 50, 40)){
-			changeLives(1);
-			medicationDifficulty++;
-			initMedicationPosition(medicationDifficulty);
-			pacSpeed++;			
-		}
-	}
-	if (medicationTime <= 0){
-		initMedicationPosition(medicationDifficulty);
-	}
-	medicationTime--;
 }
 
 function drawPacman(){
@@ -829,21 +872,23 @@ function initMedicationPosition(difficulty){
 	medicationTime = medicationTimeTolive * difficulty;
 }
 
-function initCherry(){
-	//choose random point and direction start for the cherry
-	cherryX = Math.floor(Math.random() * 800) + 50;
-	cherryY = Math.floor(Math.random() * 400) + 25;
-
-	let cherrySpeed = 5;
-	if (Math.random() > 0.5)
-		cherrySpeedX = cherrySpeed;
-	else
-		cherrySpeedX = -1 * cherrySpeed;
-
-	if (Math.random() > 0.5)
-		cherrySpeedY = cherrySpeed;
-	else
-		cherrySpeedY = -1 * cherrySpeed;
+function drawMedication(){
+	if (medicationTime <= medicationTimeTolive){
+		let img = new Image();
+		img.src = "Img/drug.jpg";
+		ctx.drawImage(img, medicationX, medicationY, 50, 40);
+		
+		if (pacmanContact(medicationX, medicationY, 50, 40)){
+			changeLives(1);
+			medicationDifficulty++;
+			initMedicationPosition(medicationDifficulty);
+			pacSpeed++;			
+		}
+	}
+	if (medicationTime <= 0){
+		initMedicationPosition(medicationDifficulty);
+	}
+	medicationTime--;
 }
 
 function initGhostPositions(){
@@ -865,51 +910,6 @@ function initGhostPositions(){
 			default:
 				break;
 		}
-	}
-}
-
-/**
- * This function sets the timer for game
- */
-function setGameTimer(){
-	setGameTimeLabel();
-	$("#timeLabel").css("color","black");
-	let timer=setInterval(function(){
-		timeOfGame--;
-		setGameTimeLabel();
-		if(timeOfGame>0 && timeOfGame<10){
-			$("#timeLabel").css("color","red");
-		}
-		if(timeOfGame==0){
-			clearInterval(timer);
-			finishGame();
-		}
-	},1000);
-	gameIntervals.push(timer);
-}
-
-function setGameTimeLabel(){
-	let minutes=0;
-	let time=timeOfGame;
-	while(time>=60){
-		minutes++;
-		time-=60;
-	}
-	if(time<10){
-		$("#timeLabel").html("0"+minutes+":0"+time.toString());
-	}
-	else{
-		$("#timeLabel").html("0"+minutes+":"+time.toString());
-	}
-	
-}
-
-function finishGame(){
-	if(score<100){
-		alert("You are better than "+score.toString()+" points!");
-	}
-	else{
-		alert("Winner!!!");
 	}
 }
 
