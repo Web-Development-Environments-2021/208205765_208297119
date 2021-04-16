@@ -29,51 +29,41 @@
 				<button id="logInButton" class="welcomeButtons" style="display: inline-flex; align-items: flex-end;" onclick="logIn()">Log In</button>
 			</div>
 		</div>
+		<div class="outerRegisterAndLogInDiv" id="outerRegisterDiv">
 		<div id="registerDiv" class="forems">
-			<u><label style="font-weight: bold; font-style: italic; padding-bottom: 5%; font-size: 30px;">Please enter your details:</label></u>
+			<img src="Img/login.png" alt="login" width="200px" height="200px" style="margin-bottom: 3%;">
+			<label class="formHeader" >Register:</label>
 			<form  onsubmit="return false;" id="registerForm">
-				<table>
-					<tr>
-				<td><label class="regLabels" for="userName">User Name:</label></td>
-				<td><input type="text" id="userName" name="userName" placeholder="user name"/></td>
-			</tr>
-			<tr>
-				<td><label class="regLabels" for="password">Password:</label>	</td>
-				<td><input type="password" id="password" name="password" placeholder="password"></td>
-			</tr>
-			<tr>
-				<td><label class="regLabels" for="fullName">Full Name:</label></td>
-				<td><input type="text" id="fullName" name="fullName" placeholder="full name"></td>
-			</tr>
-			<tr>
-				<td><label class="regLabels" for="email">Email:</label></td>
-				<td><input type="text" id="email" name="email" placeholder="email"></td>
-			</tr>
-			<tr>
-				<td><label class="regLabels" for="birthDate">Birth Date:</label></td>
-				<td><input type="date" id="birthDate" name="birthDate"></td>
-			</tr>
-			<tr><td><button type="submit" id="submitButton" class="submitButtons" >submit</button></td></tr>
-				
-			</table>
-			</form>
+				<div class="formDiv">
+				<input type="text" id="userName" name="userName" placeholder="user name" class="formInput" style="height: 100%;"/>
+				<label class="errorFormRow" id="userNameRegError"></label>
+				<input type="password" id="password" name="password" placeholder="password" class="formInput">
+				<label class="errorFormRow" id="passwordRegError"></label>
+				<input type="text" id="fullName" name="fullName" placeholder="full name" class="formInput">
+				<label class="errorFormRow" id="fullNameError"></label>
+				<input type="text" id="email" name="email" placeholder="email" class="formInput">
+				<label class="errorFormRow" id="errorEmailReg"></label>
+				<input type="date" id="birthDate" name="birthDate" class="formInput">
+				<button type="submit" id="submitButton" class="submitButtons" >Register</button>
+			</div>
+				</form>
 		</div>
+	</div>
+	<div class="outerRegisterAndLogInDiv" id="outerLogInDiv">
 		<div id="logInDiv" class="forems">
-			<u><label style="font-weight: bold; font-style: italic; margin-bottom: 5%; font-size: 30px;">Please enter your details:</label></u>
+			<img src="Img/login.png" alt="login" width="200px" height="200px" style="margin-bottom: 3%;">
+			<label class="formHeader">Log In:</label>
 			<form  onsubmit="return false;" id="logInForm" >
-				<table>
-					<tr>
-						<td><label class="regLabels" for="LIuserName">User Name:</label></td>
-						<td><input type="text" id="LIuserName" name="LIuserName" placeholder="user name"/></td>
-					</tr>
-					<tr>
-						<td><label class="regLabels" for="LIpassword">Password:</label>	</td>
-						<td><input type="password" id="LIpassword" name="LIpassword" placeholder="password"></td>
-					</tr>				
-					<tr><td><button type="submit" id="LIsubmitButton" onclick="validateDetailsAfterLogIn()" class="submitButtons" >submit</button></td></tr>				
-			</table>
-			</form>
+						<div class="formDiv">
+						<input class="formInput" type="text" id="LIuserName" name="LIuserName" placeholder="user name" />
+						<label id="errorLogInUsername" class="errorFormRow"></label>
+						<input class="formInput" type="password" id="LIpassword" name="LIpassword" placeholder="password">
+						<label id="errorPasswordLogIn" class="errorFormRow"></label>
+					<button type="submit" id="LIsubmitButton" onclick="validateDetailsAfterLogIn()" class="submitButtons" >Login</button>			
+				</div>
+				</form>
 		</div>
+	</div>
 		<div id="gameAndSettingsDiv">
 			<div id="gameDiv">
 				<div id="userInfoDiv">
@@ -92,10 +82,15 @@
 					<canvas id="myCanvas" width="900" height="450" style="border:1px solid #d3d3d3;"></canvas>
 					<img src="Img/white.png">
 				</div>
-				<button id="newGameButton">Start new game</button>
+				<div>
+					<button id="newGameButton" onclick="showSettings()">Start new game</button>
+					<button onclick="stopGame()">Pause game</button>
+					<button onclick="resumeGame()">Resume game</button>
+				</div>
+				
 			</div>
 			<div id="settingsDiv">
-				<h3><u>Please set your settings:</u></h3>
+				<h3 style="margin-bottom: 3%; font-weight: bold;">Please set your settings:</h3>
 				<br/>
 				<form onsubmit="return false;" id="settingsForm">
 				<table style="font-weight: bold;">

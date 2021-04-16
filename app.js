@@ -39,6 +39,7 @@ let medicationY;
 let medicationTime;
 let medicationTimeTolive = 100;
 let medicationDifficulty = 2;
+let gameStopped=false;
 
 $(document).ready(function(){
 	ctx=document.getElementById("myCanvas").getContext("2d");
@@ -46,46 +47,49 @@ $(document).ready(function(){
 	});
 
 function validateDataAfterRegistretion(){
+	let validRegisterData=true;
+	$(".errorFormRow").css("display","none");
 	let userName=$('#userName').val();
 	if(userName==""){
-		alert("Empty userName!");
-		return;
+		showErrorMessage("#userNameRegError","Empty user name");
+		validRegisterData=false;
 	}
 	if (userName in usersDict){
-		alert("Please choose another userName");
-		return;
+		showErrorMessage("#userNameRegError","User name taken");
+		validRegisterData=false;
 	}
 	let password=$("#password").val();
 	if(password==""){
-		alert("password should contain at least 1 letter and 1 digit");
-		return;
+		showErrorMessage("#passwordRegError","Empty password")
+		validRegisterData=false;
 	}
 	if(!checkPassword(password)){
-		alert("Please fill the password again");
-		return;
+		validRegisterData=false;
 	}
 	let fullName=$("#fullName").val();
 	if(fullName==""){
-		alert("Please fill full name");
-		return;
+		showErrorMessage("#fullNameError","Empty full name");
+		validRegisterData=false;
 	}
 	if(!checkFullName(fullName)){
-		alert("full name should contain only letters");
-		return;
+		showErrorMessage("#fullNameError","Full name should contain only letters");
+		validRegisterData=false;
 	}
 	let email=$("#email").val();
 	if(email==""){
-		alert("Please enter email!");
-		return;
+		showErrorMessage("#errorEmailReg","Empty email");
+		validRegisterData=false;
 	}
 	if(!checkEmail(email)){
-		alert("Please enter valid email");
-		return;
+		showErrorMessage("#errorEmailReg","Invalid email");
+		validRegisterData=false;
 	}
 	let birthDate=$("#birthDate").val();
-	usersDict[userName]=[password, fullName, email, birthDate];
-	loggedUser=userName;
-	showSettings();
+	if(validRegisterData){
+		usersDict[userName]=[password, fullName, email, birthDate];
+		loggedUser=userName;
+		showSettings();
+	}
 }
 
 function checkEmail(email){
@@ -95,7 +99,7 @@ function checkEmail(email){
 
 function checkPassword(password){
 	if(password.length<6){
-		alert("Password should contain at least 6 chars");
+		showErrorMessage("#passwordRegError","Password lentgh must be at least 6 chars");
 		return false;
 	}
 	let containsLetters=false;
@@ -116,7 +120,7 @@ function checkPassword(password){
 		}
 	}
 	if(!containDigits || !containsLetters){
-		alert("Password should contain letters and digits");
+		showErrorMessage("#passwordRegError","Password must contain digits and letters");
 		return false;
 	}
 	return true;
@@ -133,41 +137,49 @@ function checkFullName(fullName){
 }
 
 function validateDetailsAfterLogIn(){
+	let validLogIn=true;
+	$(".errorFormRow").css("display","none");
 	let userName=$('#LIuserName').val();
 	if(userName==""){
-		alert("Empty userName!");
-		return;
+		showErrorMessage("#errorLogInUsername","Empty user name");
+		validLogIn=false;
 	}
 	
 	let password=$("#LIpassword").val();
 	if(password==""){
-		alert("Please fill the password field");
-		return;
+		showErrorMessage("#errorPasswordLogIn","Empty password");
+		validLogIn=false;
 	}
 
 	if (!(userName in usersDict)){
-		alert("This user name dosent exist at the system");
-		return;
+		showErrorMessage("#errorLogInUsername","User name doesn't exist");
+		validLogIn=false;
 	}
 
-	if (password == usersDict[userName][0]){
+	if (validLogIn && password == usersDict[userName][0]){
 		loggedUser=userName;
 		showSettings();
 	}
 	else{
-		alert("User name or password are incorrect");
-		return;
+		showErrorMessage("#errorPasswordLogIn","Password incorrect");
 	}
 }
 
+function showErrorMessage(rowId,message){
+	$(rowId).html(message);
+	$(rowId).css("display","block");
+}
+
 function register(){
+	$(".errorFormRow").css("display","none");
 	document.getElementById("registerForm").reset();
-	switchDivs("#registerDiv","flex");	
+	switchDivs("#outerRegisterDiv","flex");	
 }
 
 function logIn(){
+	$(".errorFormRow").css("display","none");
 	document.getElementById("logInForm").reset();
-	switchDivs("#logInDiv","flex");
+	switchDivs("#outerLogInDiv","flex");
 }
 
 function showWelcomeScreen(){
@@ -563,13 +575,18 @@ function startGame(){
 	initCherry();
 	initGhostPositions();
 	initGhostsArr();
-	intervalTimer = setInterval(main, 25); // Execute as fast as possible
-	gameIntervals.push(intervalTimer);
-	setGameTimer();
+	setGameIntervals();
 	drawLives();
 	pacSpeed = 4;
 	medicationDifficulty = 2;
 	initMedicationPosition(medicationDifficulty);
+}
+
+function setGameIntervals(){
+	intervalTimer = setInterval(main, 25); // Execute as fast as possible
+	gameIntervals.push(intervalTimer);
+	setGameTimer();
+	drawLives();
 }
 
 // terminate interval timer
@@ -1048,16 +1065,38 @@ function won(){
 }
 
 function aboutScreen(){
+	if(currentDisplayedDiv=="#gameAndSettingsDiv"){
+		if(document.getElementById("gameDiv").style.display!="none"){
+			stopGamesIntervals();
+		}
+	}
 	$("#modalDiv").css("display","block");
 }
 
 function closeAbout(){
+	if(currentDisplayedDiv=="#gameAndSettingsDiv"){
+		if(document.getElementById("gameDiv").style.display!="none" && !gameStopped){
+			setGameIntervals();
+		}
+	}
 	$("#modalDiv").css("display","none");
 }
 
 window.onclick=function(event){
 	if(event.target==document.getElementById("modalDiv")){
 		closeAbout();
+	}
+}
+
+function stopGame(){
+	stopGamesIntervals();
+	gameStopped=true;
+}
+
+function resumeGame(){
+	if(gameStopped){
+		setGameIntervals();
+		gameStopped=false;
 	}
 }
 
