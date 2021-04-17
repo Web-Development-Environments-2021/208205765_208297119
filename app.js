@@ -36,9 +36,11 @@ let backgroundSong=new Audio("Beethoven-Symphony5.mp3");
 let lives=5;
 let medicationX;
 let medicationY;
-let medicationTime;
-let medicationTimeTolive = 100;
-let medicationDifficulty = 2;
+let strawberryX;
+let strawberryY;
+let bonusTime;
+let bonusTimeTolive = 100;
+let bonusDifficulty = 2;
 let gameStopped=false;
 
 $(document).ready(function(){
@@ -578,8 +580,8 @@ function startGame(){
 	setGameIntervals();
 	drawLives();
 	pacSpeed = 4;
-	medicationDifficulty = 2;
-	initMedicationPosition(medicationDifficulty);
+	bonusDifficulty = 2;
+	initBonusPosition("all", bonusDifficulty);
 }
 
 function setGameIntervals(){
@@ -856,8 +858,8 @@ function initPacmanPosition(){
 	pacY = j * 45 + 22;
 }
 
-function initMedicationPosition(difficulty){
-	//choose random empty point for the medication.
+function initBonusPosition(what, difficulty){
+	//choose random empty point for the bonuses.
 	let found = false;
 	let i = -1;
 	let j = -1;
@@ -867,28 +869,49 @@ function initMedicationPosition(difficulty){
 		if (board[i][j] != 1)
 			found = true;
 	}
-	medicationX = i * 60 + 30;
-	medicationY = j * 45 + 22;
-	medicationTime = medicationTimeTolive * difficulty;
+	if (what == "all"){
+		initBonusPosition("medication", bonusDifficulty);
+		initBonusPosition("strawberry", bonusDifficulty);
+	}
+	if (what == "medication"){
+		medicationX = i * 60 + 30;
+		medicationY = j * 45 + 22;
+	}
+	if (what == "strawberry"){
+		strawberryX = i * 60 + 30;
+		strawberryY = j * 45 + 22;
+	}
+	bonusTime = bonusTimeTolive * difficulty;
 }
 
 function drawMedication(){
-	if (medicationTime <= medicationTimeTolive){
+	if (bonusTime <= bonusTimeTolive){
 		let img = new Image();
 		img.src = "Img/drug.jpg";
 		ctx.drawImage(img, medicationX, medicationY, 50, 40);
 		
 		if (pacmanContact(medicationX, medicationY, 50, 40)){
 			changeLives(1);
-			medicationDifficulty++;
-			initMedicationPosition(medicationDifficulty);
+			bonusDifficulty++;
+			initBonusPosition("medication", bonusDifficulty);
 			pacSpeed++;			
 		}
 	}
-	if (medicationTime <= 0){
-		initMedicationPosition(medicationDifficulty);
+	else{
+		let img = new Image();
+		img.src = "Img/apple.jpg";
+		ctx.drawImage(img, strawberryX, strawberryY, 50, 40);
+		
+		if (pacmanContact(strawberryX, strawberryY, 50, 40)){
+			bonusDifficulty++;
+			initBonusPosition("strawberry", bonusDifficulty);
+			ghostSpeed -= 0.5;		
+		}
 	}
-	medicationTime--;
+	if (bonusTime <= 0){
+		initBonusPosition("all", bonusDifficulty);
+	}
+	bonusTime--;
 }
 
 function initGhostPositions(){
@@ -1033,7 +1056,7 @@ function changeGhostsLocations(){
 			initPacmanPosition();
 			initGhostPositions();
 			initGhostsArr();
-			initMedicationPosition(medicationDifficulty);
+			initBonusPosition("all", bonusDifficulty);
 		}
 	}
 }
