@@ -213,6 +213,14 @@ function showSettings(){
 	$("#gameDiv").css("display","none");
 	$("#settingsButton").css("display","block");
 	$("#randomButton").css("display","block");
+	$("#monstersNumber").html("2");
+	$("#ballsValue").html("2");
+	document.getElementById("keyUp").placeholder="Press any key";
+	document.getElementById("keyDown").placeholder="Press any key";
+	document.getElementById("keyLeft").placeholder="Press any key";
+	document.getElementById("keyRight").placeholder="Press any key";
+	document.getElementById("gameTimeInput").placeholder="Min. 60 seconds";
+	$(".explanationRow").css("display","none");
 	}
 
 /**
@@ -283,6 +291,9 @@ function validateSettings(){
 		ballsNumber=parseInt(numberOfBalls);
 		monstersNumber=parseInt(numberOfMonsters);
 		changeSettingsReadOnlyPrperty(true);
+		$("#stopGameButton").css("display","inline");
+		$("#resumeGameButton").css("display","inline");
+		$(".explanationRow").css("display","block");
 		startGame();
 		$("#gameDiv").css("display","flex");
 	}
@@ -498,7 +509,7 @@ function createDirections(){
 
 function startGame(){
 	$("#userNameToShow").html(loggedUser);
-	score = 0;
+	initParams();
 	$("#scoreLabel").html("0");
 	backgroundSong.loop=true;
 	//backgroundSong.play();
@@ -508,10 +519,16 @@ function startGame(){
 	initGhostPositions();
 	initGhostsArr();
 	setGameIntervals();
-	lives = 5;
 	drawLives();
-	pacSpeed = 8;
 	initBonusPosition("medication");
+}
+
+function initParams(){
+	countCandy=0;
+	score=0;
+	lives = 5;
+	pacSpeed = 8;
+	gameStopped=false;
 }
 
 function setGameIntervals(){
@@ -529,35 +546,16 @@ function stopTimer()
 
 function main(){
 	drawMap();
+	drawGhosts();
+	changeGhostsLocations();
 	drawPacman();
 	drawCherry();
-	if (pacmanContact(cherryX, cherryY, 50, 40)){
+	if (pacmanContact(cherryX+10, cherryY+5, 26, 22)){
 		initCherry();
 		changeScore(50);
 	}
-	drawGhosts();
-	changeGhostsLocations();
+	
 	drawBonuses();
-}
-
-/**
- * This function sets the timer for game
- */
- function setGameTimer(){
-	setGameTimeLabel();
-	$("#timeLabel").css("color","black");
-	let timer=setInterval(function(){
-		timeOfGame--;
-		setGameTimeLabel();
-		if(timeOfGame>0 && timeOfGame<10){
-			$("#timeLabel").css("color","red");
-		}
-		if(timeOfGame==0){
-			clearInterval(timer);
-			finishGame();
-		}
-	},1000);
-	gameIntervals.push(timer);
 }
 
 function setGameTimeLabel(){
@@ -583,6 +581,8 @@ function finishGame(){
 	else{
 		alert("Winner!!!");
 	}
+	$("#stopGameButton").css("display","none");
+	$("#resumeGameButton").css("display","none");
 }
 
 function drawCherry(){
@@ -753,7 +753,8 @@ function touchCandy(){
 	if (board[i][j] == 0 || board[i][j] == 1)
 		return;
 	
-	if (pacmanContact(i*sizeX + sizeX/2, j*sizeY + sizeY/2, radiusCandys[board[i][j]]*2, radiusCandys[board[i][j]]*2)){
+	let thisRadiusCandys = radiusCandys[board[i][j]];
+	if (pacmanContact(i*sizeX + sizeX/2 - thisRadiusCandys, j*sizeY + sizeY/2 - thisRadiusCandys, thisRadiusCandys*2, thisRadiusCandys*2)){
 		changeScore(board[i][j]);
 		board[i][j] = 0;
 		countCandy++;
@@ -765,18 +766,22 @@ function touchCandy(){
 }
 
 function pacmanContact(x, y, width, heigh){
+	// up - left
 	if (pacX - pacRadius <= x && x <= pacX + pacRadius)
 		if (pacY - pacRadius <= y && y <= pacY + pacRadius)
 			return true;
-
+	
+	// up - right
 	if (pacX - pacRadius <= x + width && x + width <= pacX + pacRadius)
 		if (pacY - pacRadius <= y && y <= pacY + pacRadius)
 			return true;
-		
+	
+	// down - left
 	if (pacX - pacRadius <= x && x <= pacX + pacRadius)
 		if (pacY - pacRadius <= y + heigh && y + heigh <= pacY + pacRadius)
 			return true;
-		
+	
+	// down - right
 	if (pacX - pacRadius <= x + width && x + width <= pacX + pacRadius)
 		if (pacY - pacRadius <= y + heigh && y + heigh <= pacY + pacRadius)
 			return true;
@@ -836,7 +841,7 @@ function drawBonuses(){
 	}
 	else{
 		let img = new Image();
-		img.src = "Img/strawberry.jpg";
+		img.src = "Img/strawberry.png";
 		ctx.drawImage(img, strawberryX, strawberryY, 50, 40);
 		
 		if (pacmanContact(strawberryX, strawberryY, 50, 40)){
@@ -892,6 +897,7 @@ function setGameTimer(){
 			$("#timeLabel").css("color","red");
 		}
 		if(timeOfGame==0){
+			setGameTimeLabel();
 			stopGamesIntervals();
 			finishGame();
 		}
@@ -913,15 +919,6 @@ function setGameTimeLabel(){
 		$("#timeLabel").html("0"+minutes+":"+time.toString());
 	}
 	
-}
-
-function finishGame(){
-	if(score<100){
-		alert("You are better than "+score.toString()+" points!");
-	}
-	else{
-		alert("Winner!!!");
-	}
 }
 
 function initGhostsArr(){
@@ -974,18 +971,23 @@ function changeGhostsLocations(){
 		let bestDistanceY = 99999999999;
 
 		// make sure the ghost won't go together.
-		if (Math.random() >= 0.5)
-		{
-			if (j == 0)
-				demoPacX -= 30;
-			if (j == 1)
-				demoPacX += 30;
-			if (j == 2)
-				demoPacY -= 30;
-			if (j == 3)
-				demoPacY += 30;
+		if (j < 2){
+			if (Math.abs(ghostX - pacX) > 40){
+				if (j == 0)
+					demoPacX -= 30;
+				if (j == 1)
+					demoPacX += 30;
+			}
 		}
-		
+		else{
+			if (Math.abs(ghostY - pacY) > 40){
+				if (j == 2)
+					demoPacY -= 30;
+				if (j == 3)
+					demoPacY += 30;
+			}
+		}
+
 		//check available directions.
 		if (!(checkWall(ghostX, ghostY-ghostSpeed) || checkWall(ghostX+ghostWidth, ghostY-ghostSpeed)))
 			availableDirectionsY.push("up");
@@ -1040,8 +1042,9 @@ function changeGhostsLocations(){
 		ghostsPositions[j] = [minX, minY];
 		if (pacmanContact(minX, minY, ghostWidth, ghostHeigh)){
 			changeScore(-10);
-			changeLives(-1);
-			initPacmanPosition();
+			let gameFinished=changeLives(-1);
+			if(!gameFinished){
+				initPacmanPosition();
 			initGhostPositions();
 			initGhostsArr();
 			if (bonusTime > bonusTimeTolive)
@@ -1049,6 +1052,8 @@ function changeGhostsLocations(){
 			else
 				initBonusPosition("medication");
 		}
+			}
+			
 	}
 }
 	
@@ -1060,13 +1065,15 @@ function changeScore(s){
 
 function changeLives(num){
 	lives += num;
+	drawLives();
 	if(lives==0){
 		stopGamesIntervals();
+		$("#stopGameButton").css("display","none");
+		$("#resumeGameButton").css("display","none");
 		alert("Loser!");
+		return true;
 	}
-	else{
-		drawLives();
-	}
+	return false;
 }
 
 function drawLives(){
@@ -1077,12 +1084,6 @@ function drawLives(){
 		img.className="liveImage";
 		document.getElementById("livesDiv").appendChild(img);
 	}
-}
-
-//NEED TO CHANGE!!!!!!!!!!!!!!!!
-function won(){
-	stopTimer();
-	stopGamesIntervals();
 }
 
 function aboutScreen(){

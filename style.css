@@ -327,3 +327,7 @@ html,body{
 .informationValues{
   margin-right: 2%;
 }
+
+.explanationRow{
+  display: none;
+}

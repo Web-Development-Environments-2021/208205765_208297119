@@ -84,8 +84,8 @@
 				</div>
 				<div>
 					<button class="gameButtons" id="newGameButton" onclick="showSettings()">Start new game</button>
-					<button class="gameButtons" onclick="stopGame()">Pause game</button>
-					<button class="gameButtons" onclick="resumeGame()">Resume game</button>
+					<button id="stopGameButton" class="gameButtons" onclick="stopGame()">Pause game</button>
+					<button id="resumeGameButton" class="gameButtons" onclick="resumeGame()">Resume game</button>
 				</div>
 				
 			</div>
@@ -162,7 +162,18 @@
 							<button class="settingsButtons" id="settingsButton" onclick="validateSettings()">Save settings</button>
 							<button class="settingsButtons" id="randomButton" onclick="generateRandomSettings()" >Generate random settings</button>
 							</td>
-						
+					</tr>
+					<tr class="explanationRow">
+						<td><img src="Img/cherry.png" width="30px" height="30px"></td>
+						<td>50 points</td>
+					</tr>
+					<tr class="explanationRow">
+						<td><img src="Img/drug.jpg" height="30px" width="30px"></td>
+						<td>increase lives in 1</td>
+					</tr>
+					<tr class="explanationRow">
+						<td ><img src="Img/strawberry.png" height="30px" width="30px" ></td>
+						<td>Decrease the speed of the ghosts for limited time</td>
 					</tr>
 				</table>
 			</form>
