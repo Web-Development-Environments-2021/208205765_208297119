@@ -531,7 +531,7 @@ function main(){
 	drawMap();
 	drawPacman();
 	drawCherry();
-	if (pacmanContact(cherryX, cherryY, 50, 40)){
+	if (pacmanContact(cherryX+10, cherryY+5, 26, 22)){
 		initCherry();
 		changeScore(50);
 	}
@@ -753,7 +753,8 @@ function touchCandy(){
 	if (board[i][j] == 0 || board[i][j] == 1)
 		return;
 	
-	if (pacmanContact(i*sizeX + sizeX/2, j*sizeY + sizeY/2, radiusCandys[board[i][j]]*2, radiusCandys[board[i][j]]*2)){
+	let thisRadiusCandys = radiusCandys[board[i][j]];
+	if (pacmanContact(i*sizeX + sizeX/2 - thisRadiusCandys, j*sizeY + sizeY/2 - thisRadiusCandys, thisRadiusCandys*2, thisRadiusCandys*2)){
 		changeScore(board[i][j]);
 		board[i][j] = 0;
 		countCandy++;
@@ -765,18 +766,22 @@ function touchCandy(){
 }
 
 function pacmanContact(x, y, width, heigh){
+	// up - left
 	if (pacX - pacRadius <= x && x <= pacX + pacRadius)
 		if (pacY - pacRadius <= y && y <= pacY + pacRadius)
 			return true;
-
+	
+	// up - right
 	if (pacX - pacRadius <= x + width && x + width <= pacX + pacRadius)
 		if (pacY - pacRadius <= y && y <= pacY + pacRadius)
 			return true;
-		
+	
+	// down - left
 	if (pacX - pacRadius <= x && x <= pacX + pacRadius)
 		if (pacY - pacRadius <= y + heigh && y + heigh <= pacY + pacRadius)
 			return true;
-		
+	
+	// down - right
 	if (pacX - pacRadius <= x + width && x + width <= pacX + pacRadius)
 		if (pacY - pacRadius <= y + heigh && y + heigh <= pacY + pacRadius)
 			return true;
@@ -836,7 +841,7 @@ function drawBonuses(){
 	}
 	else{
 		let img = new Image();
-		img.src = "Img/strawberry.jpg";
+		img.src = "Img/strawberry.png";
 		ctx.drawImage(img, strawberryX, strawberryY, 50, 40);
 		
 		if (pacmanContact(strawberryX, strawberryY, 50, 40)){
@@ -974,18 +979,23 @@ function changeGhostsLocations(){
 		let bestDistanceY = 99999999999;
 
 		// make sure the ghost won't go together.
-		if (Math.random() >= 0.5)
-		{
-			if (j == 0)
-				demoPacX -= 30;
-			if (j == 1)
-				demoPacX += 30;
-			if (j == 2)
-				demoPacY -= 30;
-			if (j == 3)
-				demoPacY += 30;
+		if (j < 2){
+			if (Math.abs(ghostX - pacX) > 40){
+				if (j == 0)
+					demoPacX -= 30;
+				if (j == 1)
+					demoPacX += 30;
+			}
 		}
-		
+		else{
+			if (Math.abs(ghostY - pacY) > 40){
+				if (j == 2)
+					demoPacY -= 30;
+				if (j == 3)
+					demoPacY += 30;
+			}
+		}
+
 		//check available directions.
 		if (!(checkWall(ghostX, ghostY-ghostSpeed) || checkWall(ghostX+ghostWidth, ghostY-ghostSpeed)))
 			availableDirectionsY.push("up");
