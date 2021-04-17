@@ -1,4 +1,5 @@
-let usersDict={"k":["k", "", "", ""]};
+//usersDict : [userName] = [password, fullName, email, birthDate]
+let usersDict={"K":["K", "", "", ""], "k":["k", "", "", ""]};
 let currentDisplayedDiv="#welcomeContainer";
 let keys={"Up":"","Down":"","Left":"","Right":""};
 let validSettingsData=true;
@@ -12,7 +13,7 @@ let score = 0;
 let angle = 0;
 let swicthAngle = -1;
 let pacDirection = "right";
-let pacSpeed = 5;
+let pacSpeed = 10;
 let pacX = 0;
 let pacY = 0;
 let pacRadius = 15;
@@ -36,9 +37,13 @@ let backgroundSong=new Audio("Beethoven-Symphony5.mp3");
 let lives=5;
 let medicationX;
 let medicationY;
-let medicationTime;
-let medicationTimeTolive = 100;
-let medicationDifficulty = 2;
+let strawberryX;
+let strawberryY;
+let medicationPosition = [];
+let strawberryPosition = [];
+let slowMotionTime = -500;
+let bonusTime;
+let bonusTimeTolive = 100*5;
 let gameStopped=false;
 
 $(document).ready(function(){
@@ -503,9 +508,10 @@ function startGame(){
 	initGhostPositions();
 	initGhostsArr();
 	setGameIntervals();
-	pacSpeed = 4;
-	medicationDifficulty = 2;
-	initMedicationPosition(medicationDifficulty);
+	lives = 5;
+	drawLives();
+	pacSpeed = 8;
+	initBonusPosition("medication");
 }
 
 function setGameIntervals(){
@@ -531,11 +537,7 @@ function main(){
 	}
 	drawGhosts();
 	changeGhostsLocations();
-	drawMedication();
-
-	if (angle > 0.188 || angle < 0.0001)
-		swicthAngle *= -1;
-	angle = swicthAngle * 0.02 + angle;
+	drawBonuses();
 }
 
 /**
@@ -602,6 +604,13 @@ function initCherry(){
 	//choose random point and direction start for the cherry
 	cherryX = Math.floor(Math.random() * 800) + 50;
 	cherryY = Math.floor(Math.random() * 400) + 25;
+	let pythagorasDistance = Math.pow(Math.pow(cherryX - pacX, 2) + Math.pow(cherryY - pacY, 2), 0.5);
+
+	while(pythagorasDistance < 100){
+		cherryX = Math.floor(Math.random() * 800) + 50;
+		cherryY = Math.floor(Math.random() * 400) + 25;
+		pythagorasDistance = Math.pow(Math.pow(cherryX - pacX, 2) + Math.pow(cherryY - pacY, 2), 0.5);
+	}
 
 	let cherrySpeed = 5;
 	if (Math.random() > 0.5)
@@ -613,6 +622,7 @@ function initCherry(){
 		cherrySpeedY = cherrySpeed;
 	else
 		cherrySpeedY = -1 * cherrySpeed;
+	drawCherry();
 }
 
 function drawMap(){
@@ -639,6 +649,12 @@ function drawMap(){
 }
 
 function drawPacman(){
+	
+	//change size of the mouth.
+	if (angle > 0.188 || angle < 0.0001)
+		swicthAngle *= -1;
+	angle = swicthAngle * 0.02 + angle;
+
 	switch (pacDirection) {
 		case "right":
 			drawPacmanInDirection(0.2,1.8,pacX,pacY-10);
@@ -783,8 +799,8 @@ function initPacmanPosition(){
 	pacY = j * 45 + 22;
 }
 
-function initMedicationPosition(difficulty){
-	//choose random empty point for the medication.
+function initBonusPosition(what){
+	//choose random empty point for the bonuses.
 	let found = false;
 	let i = -1;
 	let j = -1;
@@ -794,28 +810,51 @@ function initMedicationPosition(difficulty){
 		if (board[i][j] != 1)
 			found = true;
 	}
-	medicationX = i * 60 + 30;
-	medicationY = j * 45 + 22;
-	medicationTime = medicationTimeTolive * difficulty;
+	if (what == "medication"){
+		medicationX = i * 60 + 30;
+		medicationY = j * 45 + 22;
+		bonusTime = bonusTimeTolive;
+	}
+	if (what == "strawberry"){
+		strawberryX = i * 60 + 30;
+		strawberryY = j * 45 + 22;
+		bonusTime = bonusTimeTolive * 2;
+	}
 }
 
-function drawMedication(){
-	if (medicationTime <= medicationTimeTolive){
+function drawBonuses(){
+	if (bonusTime <= bonusTimeTolive){
 		let img = new Image();
 		img.src = "Img/drug.jpg";
 		ctx.drawImage(img, medicationX, medicationY, 50, 40);
 		
 		if (pacmanContact(medicationX, medicationY, 50, 40)){
 			changeLives(1);
-			medicationDifficulty++;
-			initMedicationPosition(medicationDifficulty);
+			initBonusPosition("strawberry");
 			pacSpeed++;			
 		}
 	}
-	if (medicationTime <= 0){
-		initMedicationPosition(medicationDifficulty);
+	else{
+		let img = new Image();
+		img.src = "Img/strawberry.jpg";
+		ctx.drawImage(img, strawberryX, strawberryY, 50, 40);
+		
+		if (pacmanContact(strawberryX, strawberryY, 50, 40)){
+			initBonusPosition("medication");
+			ghostSpeed = 0.5;
+			slowMotionTime = 150;
+		}
 	}
-	medicationTime--;
+	if (bonusTime <= 0){
+		initBonusPosition("strawberry");
+	}
+	if (slowMotionTime > 0)
+		slowMotionTime--;
+	if (slowMotionTime == 0){
+		slowMotionTime = -500;
+		ghostSpeed = 1;
+	}
+	bonusTime--;
 }
 
 function initGhostPositions(){
@@ -1005,7 +1044,10 @@ function changeGhostsLocations(){
 			initPacmanPosition();
 			initGhostPositions();
 			initGhostsArr();
-			initMedicationPosition(medicationDifficulty);
+			if (bonusTime > bonusTimeTolive)
+				initBonusPosition("strawberry");
+			else
+				initBonusPosition("medication");
 		}
 	}
 }
