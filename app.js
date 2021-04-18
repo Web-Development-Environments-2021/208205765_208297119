@@ -546,16 +546,16 @@ function stopTimer()
 
 function main(){
 	drawMap();
-	drawGhosts();
-	changeGhostsLocations();
-	drawPacman();
-	drawCherry();
+	drawBonuses();
+	drawCherry();	
 	if (pacmanContact(cherryX+10, cherryY+5, 26, 22)){
 		initCherry();
 		changeScore(50);
 	}
-	
-	drawBonuses();
+
+	changeGhostsLocations();
+	drawGhosts();
+	drawPacman();
 }
 
 function setGameTimeLabel(){
@@ -736,6 +736,12 @@ document.addEventListener('keydown', function (event) {
 	}
 });
 
+window.addEventListener("keydown", function(event){
+	if (["Space", "ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "Tab", "Enter"].indexOf(event.code)>-1){
+		event.preventDefault();
+	}
+});
+
 function checkWall(x, y){
 	if (x >= 900 || x < 0)
 		return true;
@@ -785,6 +791,26 @@ function pacmanContact(x, y, width, heigh){
 	
 	// down - right
 	if (pacX - pacRadius <= x + width && x + width <= pacX + pacRadius)
+		if (pacY - pacRadius <= y + heigh && y + heigh <= pacY + pacRadius)
+			return true;
+	
+	// center - left
+	if (pacX - pacRadius <= x && x <= pacX + pacRadius)
+		if (pacY - pacRadius <= y + heigh/2 && y + heigh/2 <= pacY + pacRadius)
+			return true;
+	
+	// center - right
+	if (pacX - pacRadius <= x + width && x + width <= pacX + pacRadius)
+		if (pacY - pacRadius <= y + heigh/2 && y + heigh/2 <= pacY + pacRadius)
+			return true;
+	
+	// center - down
+	if (pacX - pacRadius <= x + width/2 && x + width/2 <= pacX + pacRadius)
+		if (pacY - pacRadius <= y + heigh && y + heigh <= pacY + pacRadius)
+			return true;
+	
+	// center - up
+	if (pacX - pacRadius <= x + width/2 && x + width/2 <= pacX + pacRadius)
 		if (pacY - pacRadius <= y + heigh && y + heigh <= pacY + pacRadius)
 			return true;
 	
@@ -970,7 +996,7 @@ function changeGhostsLocations(){
 		let availableDirectionsX = [];
 		let availableDirectionsY = [];
 		let demoPacX = pacX;
-		let demoPacY = pacY;		
+		let demoPacY = pacY;
 		let newDist = 1;
 		let minX = ghostX;
 		let minY = ghostY;
