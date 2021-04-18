@@ -226,7 +226,7 @@ function showSettings(){
 	$("#settingsButton").css("display","block");
 	$("#randomButton").css("display","block");
 	$("#monstersNumber").html("2");
-	$("#ballsValue").html("2");
+	$("#ballsValue").html("60");
 	document.getElementById("keyUp").placeholder="Press any key";
 	document.getElementById("keyDown").placeholder="Press any key";
 	document.getElementById("keyLeft").placeholder="Press any key";
