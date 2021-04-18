@@ -601,7 +601,7 @@ function drawCherry(){
 }
 
 function initCherry(){
-	//choose random point and direction start for the cherry
+	/*//choose random point and direction start for the cherry
 	cherryX = Math.floor(Math.random() * 800) + 50;
 	cherryY = Math.floor(Math.random() * 400) + 25;
 	let pythagorasDistance = Math.pow(Math.pow(cherryX - pacX, 2) + Math.pow(cherryY - pacY, 2), 0.5);
@@ -610,7 +610,9 @@ function initCherry(){
 		cherryX = Math.floor(Math.random() * 800) + 50;
 		cherryY = Math.floor(Math.random() * 400) + 25;
 		pythagorasDistance = Math.pow(Math.pow(cherryX - pacX, 2) + Math.pow(cherryY - pacY, 2), 0.5);
-	}
+	}*/
+	cherryX = 900/2;
+	cherryY = 450/2;
 
 	let cherrySpeed = 5;
 	if (Math.random() > 0.5)
@@ -785,6 +787,11 @@ function pacmanContact(x, y, width, heigh){
 	if (pacX - pacRadius <= x + width && x + width <= pacX + pacRadius)
 		if (pacY - pacRadius <= y + heigh && y + heigh <= pacY + pacRadius)
 			return true;
+	
+	// center
+	if (pacX - pacRadius <= x + width/2 && x + width/2 <= pacX + pacRadius)
+		if (pacY - pacRadius <= y + heigh/2 && y + heigh/2 <= pacY + pacRadius)
+			return true;
 		
 	return false;
 }
@@ -816,13 +823,13 @@ function initBonusPosition(what){
 			found = true;
 	}
 	if (what == "medication"){
-		medicationX = i * 60 + 30;
-		medicationY = j * 45 + 22;
+		medicationX = i * 60;
+		medicationY = j * 45;
 		bonusTime = bonusTimeTolive;
 	}
 	if (what == "strawberry"){
-		strawberryX = i * 60 + 30;
-		strawberryY = j * 45 + 22;
+		strawberryX = i * 60;
+		strawberryY = j * 45;
 		bonusTime = bonusTimeTolive * 2;
 	}
 }
@@ -841,7 +848,7 @@ function drawBonuses(){
 	}
 	else{
 		let img = new Image();
-		img.src = "Img/strawberry.png";
+		img.src = "Img/strawberry-removebg-preview.png";
 		ctx.drawImage(img, strawberryX, strawberryY, 50, 40);
 		
 		if (pacmanContact(strawberryX, strawberryY, 50, 40)){
