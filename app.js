@@ -31,6 +31,8 @@ let ghostsArr;
 let ghostWidth = 50;
 let ghostHeigh = 40;
 let ghostSpeed = 1;
+let ghostTarget = []
+let ghostGoToCorner = [];
 let countCandy = 0;
 let radiusCandys = {5:12, 15:8, 25:4};
 let backgroundSong=new Audio("Beethoven-Symphony5.mp3");
@@ -575,6 +577,13 @@ function setGameTimeLabel(){
 }
 
 function finishGame(){
+	drawMap();
+	drawBonuses();
+	drawCherry();	
+
+	drawGhosts();
+	drawPacman();
+
 	if(score<100){
 		alert("You are better than "+score.toString()+" points!");
 	}
@@ -874,7 +883,7 @@ function drawBonuses(){
 	}
 	else{
 		let img = new Image();
-		img.src = "Img/strawberry-removebg-preview.png";
+		img.src = "Img/strawberry.png";
 		ctx.drawImage(img, strawberryX, strawberryY, 50, 40);
 		
 		if (pacmanContact(strawberryX, strawberryY, 50, 40)){
@@ -900,16 +909,24 @@ function initGhostPositions(){
 	for(let i=0;i<monstersNumber;i++){
 		switch (directions[i]) {
 			case 1:
-				ghostsPositions[i]=[0,0];//top left corner
+				ghostsPositions[i] = [0,0];//top left corner
+				ghostTarget.push([0, 0]);
+				ghostGoToCorner.push(false);
 				break;
 			case 2:
-				ghostsPositions[i]= [0,sizeY*(board[0].length-1)];//bottom left corener	
+				ghostsPositions[i] = [0,sizeY*(board[0].length-1)];//bottom left corener
+				ghostTarget.push([0,sizeY*(board[0].length-1)]);
+				ghostGoToCorner.push(false);
 				break;
 			case 3:
-				ghostsPositions[i]=[sizeX*(board.length-1),0];//top right corner
+				ghostsPositions[i] = [sizeX*(board.length-1),0];//top right corner
+				ghostTarget.push([sizeX*(board.length-1),0]);
+				ghostGoToCorner.push(false);
 				break;
 			case 4:
-				ghostsPositions[i]=[(board.length-1)*sizeX,(board[0].length-1)*sizeY];//bottom right corner
+				ghostsPositions[i] = [(board.length-1)*sizeX,(board[0].length-1)*sizeY];//bottom right corner
+				ghostTarget.push([(board.length-1)*sizeX,(board[0].length-1)*sizeY]);
+				ghostGoToCorner.push(false);
 				break;		
 			default:
 				break;
@@ -989,23 +1006,57 @@ function drawGhosts(){
 	}
 }
 
+function goToCorner(x){
+	if (ghostGoToCorner[x]){
+		for (let j=0; j<ghostsArr.length; j++){
+			if (j != x){
+				let dist = Math.pow(Math.pow(ghostsPositions[j][0] - ghostsPositions[x][0], 2) + Math.pow(ghostsPositions[j][1] - ghostsPositions[x][1], 2), 0.5);
+				if (dist < 150){
+					return;
+				}
+			}
+		}
+		ghostGoToCorner[x] = false;
+		return;
+	}
+	for (let j=0; j<ghostsArr.length; j++){
+		if (j != x && !ghostGoToCorner[j]){
+			let dist = Math.pow(Math.pow(ghostsPositions[j][0] - ghostsPositions[x][0], 2) + Math.pow(ghostsPositions[j][1] - ghostsPositions[x][1], 2), 0.5);
+			if (dist < 45){
+				ghostGoToCorner[x] = true;
+				return;
+			}
+		}
+	}
+}
+
 function changeGhostsLocations(){
 	for(let j=0;j<ghostsArr.length;j++){
 		let ghostX=ghostsPositions[j][0];
 		let ghostY=ghostsPositions[j][1];
 		let availableDirectionsX = [];
 		let availableDirectionsY = [];
-		let demoPacX = pacX;
-		let demoPacY = pacY;
 		let newDist = 1;
 		let minX = ghostX;
 		let minY = ghostY;
 		let bestDistanceX = 99999999999;
 		let bestDistanceY = 99999999999;
 
-		// make sure the ghost won't go together.
+		goToCorner(j)
+		let demoPacX;
+		let demoPacY;
+		if (ghostGoToCorner[j]){
+			demoPacX = ghostTarget[j][0];
+			demoPacY = ghostTarget[j][1];
+		}
+		else{
+			demoPacX = pacX - pacRadius;
+			demoPacY = pacY - pacRadius;			
+		}
+
+		/*// make sure the ghost won't go together.
 		if (j < 2){
-			if (Math.abs(ghostX - pacX) > 40){
+			if (Math.abs(ghostX - demoPacX) > 40){
 				if (j == 0)
 					demoPacX -= 30;
 				if (j == 1)
@@ -1013,13 +1064,13 @@ function changeGhostsLocations(){
 			}
 		}
 		else{
-			if (Math.abs(ghostY - pacY) > 40){
+			if (Math.abs(ghostY - demoPacY) > 40){
 				if (j == 2)
 					demoPacY -= 30;
 				if (j == 3)
 					demoPacY += 30;
 			}
-		}
+		}*/
 
 		//check available directions.
 		if (!(checkWall(ghostX, ghostY-ghostSpeed) || checkWall(ghostX+ghostWidth, ghostY-ghostSpeed)))
