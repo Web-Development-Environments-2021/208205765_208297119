@@ -753,6 +753,11 @@ document.addEventListener('keydown', function (event) {
 			touchCandy();
 		}
 	}
+	if(event.key=="Escape"){
+		if(document.getElementById("modalDiv").style.display!="none"){
+			closeAbout();
+		}
+	}
 });
 
 window.addEventListener("keydown", function(event){
@@ -1051,6 +1056,7 @@ function changeGhostsLocations(){
 		let minY = ghostY;
 		let bestDistanceX = 99999999999;
 		let bestDistanceY = 99999999999;
+		let changed=false;
 
 		goToCorner(j)
 		let demoPacX;
@@ -1099,6 +1105,7 @@ function changeGhostsLocations(){
 					if (newDist < bestDistanceY){
 						minY = ghostY - ghostSpeed;
 						bestDistanceY = newDist;
+						changed=true;
 					}
 					break;
 				case "down":
@@ -1106,6 +1113,7 @@ function changeGhostsLocations(){
 					if (newDist < bestDistanceY){
 						minY = ghostY + ghostSpeed;
 						bestDistanceY = newDist;
+						changed=true;
 					}
 					break;
 				default:
@@ -1120,6 +1128,7 @@ function changeGhostsLocations(){
 					if (newDist < bestDistanceX){
 						minX = ghostX - ghostSpeed;
 						bestDistanceX = newDist;
+						changed=true;
 					}
 					break;
 				case "right":
@@ -1127,12 +1136,18 @@ function changeGhostsLocations(){
 					if (newDist < bestDistanceX){
 						minX = ghostX + ghostSpeed;
 						bestDistanceX = newDist;
+						changed=true;
 					}
 					break;
 				default:
 					break;
 			}
 		}
+		if(!changed){
+			directions=chooseRandomDirection(availableDirectionsY,availableDirectionsX,ghostX,ghostY);
+				minX=directions[0][0];
+				minY=directions[0][1];
+				}
 		ghostsPositions[j] = [minX, minY];
 		if (pacmanContact(minX, minY, ghostWidth, ghostHeigh)){
 			changeScore(-10);
@@ -1149,6 +1164,35 @@ function changeGhostsLocations(){
 			}
 			
 	}
+}
+
+function chooseRandomDirection(vDirections,hDirections,ghostX,ghostY){
+	let avaliableDirections=[];
+	for(let i=0;i<vDirections.length;i++){
+		switch(vDirections[i]){
+			case "up":
+				avaliableDirections.push([ghostX,ghostY-ghostSpeed]);
+				break;
+			case "down":
+				avaliableDirections.push([ghostX,ghostY+ghostSpeed]);
+				break;	
+		}
+	}
+	for(let i=0;i<hDirections.length;i++){
+		switch(hDirections[i]){
+			case "left":
+				avaliableDirections.push([ghostX-ghostSpeed,ghostY]);
+				break;
+			case "right":
+				avaliableDirections.push([ghostX+ghostSpeed,ghostY]);
+				break;	
+		}
+	}
+	for (let i = avaliableDirections.length - 1; i > 0; i--) {//shuffle directions
+        const j = Math.floor(Math.random() * (i + 1));
+        [avaliableDirections[i], avaliableDirections[j]] = [avaliableDirections[j], avaliableDirections[i]];
+    }
+	return avaliableDirections;
 }
 	
 function changeScore(s){
@@ -1203,6 +1247,8 @@ window.onclick=function(event){
 		closeAbout();
 	}
 }
+
+
 
 function stopGame(){
 	stopGamesIntervals();
