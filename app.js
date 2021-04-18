@@ -1,5 +1,5 @@
 //usersDict : [userName] = [password, fullName, email, birthDate]
-let usersDict={"K":["K", "", "", ""], "k":["k", "", "", ""]};
+let usersDict={"k":["k", "", "", ""]};
 let currentDisplayedDiv="#welcomeContainer";
 let keys={"Up":"","Down":"","Left":"","Right":""};
 let validSettingsData=true;
@@ -46,85 +46,12 @@ let bonusTime;
 let bonusTimeTolive = 100*5;
 let gameStopped=false;
 
-$(document).ready(function(){
-	ctx=document.getElementById("myCanvas").getContext("2d");
-	$("#submitButton").click(validateDataAfterRegistretion);
-	let slider=document.getElementById("ballsSlider");
-	let ballsValue=document.getElementById("ballsValue");
-	slider.oninput=function(){
-		ballsValue.innerHTML=this.value;
-	}
-	let monstersSlider=document.getElementById("monstersSlider");
-	let monstersValue=document.getElementById("monstersNumber");
-	monstersSlider.oninput=function(){
-		monstersValue.innerHTML=this.value;
-	}
-	});
-
-function validateDataAfterRegistretion(){
-	let validRegisterData=true;
-	$(".errorFormRow").css("display","none");
-	let userName=$('#userName').val();
-	if(userName==""){
-		showErrorMessage("#userNameRegError","Empty user name");
-		validRegisterData=false;
-	}
-	if (userName in usersDict){
-		showErrorMessage("#userNameRegError","User name taken");
-		validRegisterData=false;
-	}
-	let password=$("#password").val();
-	if(password==""){
-		showErrorMessage("#passwordRegError","Empty password")
-		validRegisterData=false;
-	}
-	if(!checkPassword(password)){
-		validRegisterData=false;
-	}
-	let fullName=$("#fullName").val();
-	if(fullName==""){
-		showErrorMessage("#fullNameError","Empty full name");
-		validRegisterData=false;
-	}
-	if(!checkFullName(fullName)){
-		showErrorMessage("#fullNameError","Full name should contain only letters");
-		validRegisterData=false;
-	}
-	let email=$("#email").val();
-	if(email==""){
-		showErrorMessage("#errorEmailReg","Empty email");
-		validRegisterData=false;
-	}
-	if(!checkEmail(email)){
-		showErrorMessage("#errorEmailReg","Invalid email");
-		validRegisterData=false;
-	}
-	let birthDate=$("#birthDate").val();
-	if(birthDate==""){
-		showErrorMessage("#birthDateError","Empty birthdate");
-		validRegisterData=false;
-	}
-	if(validRegisterData){
-		usersDict[userName]=[password, fullName, email, birthDate];
-		loggedUser=userName;
-		showSettings();
-	}
-}
-
-function checkEmail(email){
-	const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-    return re.test(String(email).toLowerCase());
-}
-
-function checkPassword(password){
-	if(password.length<6){
-		showErrorMessage("#passwordRegError","Password lentgh must be at least 6 chars");
-		return false;
-	}
-	let containsLetters=false;
+$(function(){
+	$.validator.addMethod("checkPassword",function(value,element){
+		let containsLetters=false;
 	let containDigits=false;
-	for(let i=0;i<password.length;i++){//loop over password and check if contains letters or digits
-		let asciiValue=password.charAt(i).charCodeAt(0);
+	for(let i=0;i<value.length;i++){//loop over password and check if contains letters or digits
+		let asciiValue=value.charAt(i).charCodeAt(0);
 		if(!containDigits){//check if contain digits
 			if(asciiValue>=48 && asciiValue<=57){
 				containDigits=true;
@@ -139,21 +66,104 @@ function checkPassword(password){
 		}
 	}
 	if(!containDigits || !containsLetters){
-		showErrorMessage("#passwordRegError","Password must contain digits and letters");
+		//showErrorMessage("#passwordRegError","Password must contain digits and letters");
 		return false;
 	}
 	return true;
-}
+	});
+})
 
-function checkFullName(fullName){
-	for(let i=0;i<fullName.length;i++){
-		let asciiValue=fullName.charAt(i).charCodeAt(0);
-		if(asciiValue>=123 || asciiValue<=96){
-			return false;
+$(function(){
+	$.validator.addMethod("freeUserName",function(value,element){
+		return !(value in usersDict);
+	});
+})
+
+
+$(function(){
+	$.validator.addMethod("checkName",function(value,element){
+		for(let i=0;i<value.length;i++){
+			let asciiValue=value.charAt(i).charCodeAt(0);
+			if(asciiValue>=123 || asciiValue<=96){
+				return false;
+			}
 		}
+		return true;
+	})
+})
+
+$(document).ready(function(){
+	ctx=document.getElementById("myCanvas").getContext("2d");
+	//$("#submitButton").click(validateDataAfterRegistretion);
+	let slider=document.getElementById("ballsSlider");
+	let ballsValue=document.getElementById("ballsValue");
+	slider.oninput=function(){
+		ballsValue.innerHTML=this.value;
 	}
-	return true;
-}
+	let monstersSlider=document.getElementById("monstersSlider");
+	let monstersValue=document.getElementById("monstersNumber");
+	monstersSlider.oninput=function(){
+		monstersValue.innerHTML=this.value;
+	}
+	window.addEventListener("keydown",function(event){
+		if(["Space","ArrowUp","ArrowDown","ArrowLeft","ArrowRight","Tab","Enter"].indexOf(event.code)>-1){
+			event.preventDefault();
+		}
+	},false);
+	$("#registerForm").validate({
+		rules:{
+			userName:{
+				required:true,
+				freeUserName:true
+			},
+			password:{
+				required:true,
+				checkPassword:true,
+				minlength:6
+			},
+			fullName:{
+				required:true,
+				checkName:true
+			},
+			email:{
+				required:true,
+				email:true
+			},
+			birthDate:"required"
+		},
+		messages:{
+			userName:{
+				required:"Please enter user name",
+				freeUserName:"Username isn't free"
+			},
+			password:{
+				required:"Please enter password",
+				checkPassword:"Password must contain at least 1 letter and 1 digit",
+				minlength:"Password must be at least 6 chars"
+			},
+		fullName:{
+			required:"Please enter full name",
+			checkName:"full name must contain only letters"
+		},
+		email:{
+			required:"Please enter email",
+			email:"email isn't valid"
+		},
+		birthDate:"Please enter birth date"},
+		submitHandler:function(form,event){
+			let userName=$("#userName").val();
+			let password=$("#password").val();
+			let fullName=$("#fullName").val();
+			let email=$("#email").val();
+			let birthDate=$("#birthDate").val();
+			usersDict[userName]=[password, fullName, email, birthDate];
+			form.reset();
+			showWelcomeScreen();
+		}
+	})
+
+	});
+
 
 function validateDetailsAfterLogIn(){
 	let validLogIn=true;
