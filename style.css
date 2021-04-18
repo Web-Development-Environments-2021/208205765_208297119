@@ -34,16 +34,17 @@ html,body{
   position: relative;
   width: 100%;
   background-color: black;
-  margin: 0;
-  padding: 0;
-  height: 6%;
+  list-style-type: none;
   }
 
 .menu a {
   display: block;
   color: white;
   text-align: center;
-  padding: 14px 40px;
+  padding-right: 1%;
+  padding-top: 0.5%;
+  padding-bottom: 0.5%;
+  padding-left: 1%;
   text-decoration: none;
   float: left;
     border-right:1px solid #bbb;
