@@ -30,12 +30,12 @@ let ghostsPositions=[];
 let ghostsArr;
 let ghostWidth = 50;
 let ghostHeigh = 40;
-let ghostSpeed = 1;
+let ghostSpeed;
 let ghostTarget = []
 let ghostGoToCorner = [];
 let countCandy = 0;
 let radiusCandys = {5:12, 15:8, 25:4};
-let backgroundSong=new Audio("Beethoven-Symphony5.mp3");
+let backgroundSong=new Audio("Official-Anthem.wav");
 let lives=5;
 let medicationX;
 let medicationY;
@@ -539,8 +539,9 @@ function initParams(){
 	countCandy=0;
 	score=0;
 	lives = 5;
-	pacSpeed = 8;
+	pacSpeed = 4;
 	gameStopped=false;
+	ghostSpeed = 1.5;
 }
 
 function setGameIntervals(){
@@ -565,6 +566,7 @@ function main(){
 		changeScore(50);
 	}
 
+	movePacman()
 	changeGhostsLocations();
 	drawGhosts();
 	drawPacman();
@@ -725,40 +727,56 @@ function drawPacmanInDirection(startAngle,endAngle,eyeX,eyeY){
 }
 
 document.addEventListener('keydown', function (event) {
-	if (event.key === keys["Up"]) {
+	if (event.key === keys["Up"])
 		pacDirection = "up";
-		if (!(checkWall(pacX-pacRadius, pacY-pacSpeed-pacRadius) || checkWall(pacX+pacRadius, pacY-pacSpeed-pacRadius))){
-			pacY -= pacSpeed;
-			touchCandy();
-		}
-	}
-	if (event.key === keys["Down"]) {
+
+	if (event.key === keys["Down"]) 
 		pacDirection = "down";
-		if (!(checkWall(pacX-pacRadius, pacY+pacSpeed+pacRadius) || checkWall(pacX+pacRadius, pacY+pacSpeed+pacRadius))){
-			pacY += pacSpeed;
-			touchCandy();
-		}
-	}
-	if (event.key === keys["Left"]) {
+
+	if (event.key === keys["Left"]) 
 		pacDirection = "left";
-		if (!(checkWall(pacX-pacSpeed-pacRadius, pacY-pacRadius) || checkWall(pacX-pacSpeed-pacRadius, pacY+pacRadius))){
-			pacX -= pacSpeed;
-			touchCandy();
-		}
-	}
-	if (event.key === keys["Right"]) {
+
+	if (event.key === keys["Right"])
 		pacDirection = "right";
-		if (!(checkWall(pacX+pacSpeed+pacRadius, pacY-pacRadius) || checkWall(pacX+pacSpeed+pacRadius, pacY+pacRadius))){
-			pacX += pacSpeed;
-			touchCandy();
-		}
-	}
+
 	if(event.key=="Escape"){
 		if(document.getElementById("modalDiv").style.display!="none"){
 			closeAbout();
 		}
 	}
 });
+
+function movePacman(){
+	let didMove = false;
+	switch (pacDirection){
+		case "up":
+			if (!(checkWall(pacX-pacRadius, pacY-pacSpeed-pacRadius) || checkWall(pacX+pacRadius, pacY-pacSpeed-pacRadius))){
+				pacY -= pacSpeed;
+				didMove = true;
+			}
+			break;
+		case "down":
+			if (!(checkWall(pacX-pacRadius, pacY+pacSpeed+pacRadius) || checkWall(pacX+pacRadius, pacY+pacSpeed+pacRadius))){
+				pacY += pacSpeed;
+				didMove = true;
+			}
+			break;
+		case "left":
+			if (!(checkWall(pacX-pacSpeed-pacRadius, pacY-pacRadius) || checkWall(pacX-pacSpeed-pacRadius, pacY+pacRadius))){
+				pacX -= pacSpeed;
+				didMove = true;
+			}
+			break;
+		case "right":
+			if (!(checkWall(pacX+pacSpeed+pacRadius, pacY-pacRadius) || checkWall(pacX+pacSpeed+pacRadius, pacY+pacRadius))){
+				pacX += pacSpeed;
+				didMove = true;
+			}
+			break;
+	}
+	if (didMove)
+		touchCandy();
+}
 
 window.addEventListener("keydown", function(event){
 	if (["Space", "ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "Tab", "Enter"].indexOf(event.code)>-1){
@@ -893,7 +911,7 @@ function drawBonuses(){
 		if (pacmanContact(medicationX, medicationY, 50, 40)){
 			changeLives(1);
 			initBonusPosition("strawberry");
-			pacSpeed++;			
+			pacSpeed++;
 		}
 	}
 	else{
@@ -903,7 +921,7 @@ function drawBonuses(){
 		
 		if (pacmanContact(strawberryX, strawberryY, 50, 40)){
 			initBonusPosition("medication");
-			ghostSpeed = 0.5;
+			ghostSpeed = 1;
 			slowMotionTime = 150;
 		}
 	}
@@ -914,7 +932,7 @@ function drawBonuses(){
 		slowMotionTime--;
 	if (slowMotionTime == 0){
 		slowMotionTime = -500;
-		ghostSpeed = 1;
+		ghostSpeed = 1.5;
 	}
 	bonusTime--;
 }
@@ -1143,11 +1161,6 @@ function changeGhostsLocations(){
 					break;
 			}
 		}
-		if(!changed){
-			directions=chooseRandomDirection(availableDirectionsY,availableDirectionsX,ghostX,ghostY);
-				minX=directions[0][0];
-				minY=directions[0][1];
-				}
 		ghostsPositions[j] = [minX, minY];
 		if (pacmanContact(minX, minY, ghostWidth, ghostHeigh)){
 			changeScore(-10);
@@ -1166,35 +1179,6 @@ function changeGhostsLocations(){
 	}
 }
 
-function chooseRandomDirection(vDirections,hDirections,ghostX,ghostY){
-	let avaliableDirections=[];
-	for(let i=0;i<vDirections.length;i++){
-		switch(vDirections[i]){
-			case "up":
-				avaliableDirections.push([ghostX,ghostY-ghostSpeed]);
-				break;
-			case "down":
-				avaliableDirections.push([ghostX,ghostY+ghostSpeed]);
-				break;	
-		}
-	}
-	for(let i=0;i<hDirections.length;i++){
-		switch(hDirections[i]){
-			case "left":
-				avaliableDirections.push([ghostX-ghostSpeed,ghostY]);
-				break;
-			case "right":
-				avaliableDirections.push([ghostX+ghostSpeed,ghostY]);
-				break;	
-		}
-	}
-	for (let i = avaliableDirections.length - 1; i > 0; i--) {//shuffle directions
-        const j = Math.floor(Math.random() * (i + 1));
-        [avaliableDirections[i], avaliableDirections[j]] = [avaliableDirections[j], avaliableDirections[i]];
-    }
-	return avaliableDirections;
-}
-	
 function changeScore(s){
 	// change the score of the game by s
 	score += s;
