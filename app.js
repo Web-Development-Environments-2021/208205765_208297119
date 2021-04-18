@@ -566,7 +566,7 @@ function main(){
 		changeScore(50);
 	}
 
-	movePacman()
+	movePacman();
 	changeGhostsLocations();
 	drawGhosts();
 	drawPacman();
