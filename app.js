@@ -533,6 +533,7 @@ function startGame(){
 	setGameIntervals();
 	drawLives();
 	initBonusPosition("medication");
+	initGhostCorners();
 }
 
 function initParams(){
@@ -566,10 +567,10 @@ function main(){
 		changeScore(50);
 	}
 
-	movePacman();
-	changeGhostsLocations();
 	drawGhosts();
 	drawPacman();
+	movePacman();
+	changeGhostsLocations();
 }
 
 function setGameTimeLabel(){
@@ -595,6 +596,7 @@ function finishGame(){
 
 	drawGhosts();
 	drawPacman();
+	stopGamesIntervals();
 
 	if(score<100){
 		alert("You are better than "+score.toString()+" points!");
@@ -808,10 +810,8 @@ function touchCandy(){
 		changeScore(board[i][j]);
 		board[i][j] = 0;
 		countCandy++;
-		if(countCandy==ballsNumber){
-			stopGamesIntervals();
+		if(countCandy==ballsNumber)
 			finishGame();
-		}
 	}
 }
 
@@ -943,21 +943,39 @@ function initGhostPositions(){
 		switch (directions[i]) {
 			case 1:
 				ghostsPositions[i] = [0,0];//top left corner
+				break;
+			case 2:
+				ghostsPositions[i] = [0,sizeY*(board[0].length-1)];//bottom left corener
+				break;
+			case 3:
+				ghostsPositions[i] = [sizeX*(board.length-1),0];//top right corner
+				break;
+			case 4:
+				ghostsPositions[i] = [(board.length-1)*sizeX,(board[0].length-1)*sizeY];//bottom right corner
+				break;		
+			default:
+				break;
+		}
+	}
+}
+
+function initGhostCorners(){
+	let directions=createDirections();
+	for(let i=0;i<monstersNumber;i++){
+		switch (directions[i]) {
+			case 1:
 				ghostTarget.push([0, 0]);
 				ghostGoToCorner.push(false);
 				break;
 			case 2:
-				ghostsPositions[i] = [0,sizeY*(board[0].length-1)];//bottom left corener
 				ghostTarget.push([0,sizeY*(board[0].length-1)]);
 				ghostGoToCorner.push(false);
 				break;
 			case 3:
-				ghostsPositions[i] = [sizeX*(board.length-1),0];//top right corner
 				ghostTarget.push([sizeX*(board.length-1),0]);
 				ghostGoToCorner.push(false);
 				break;
 			case 4:
-				ghostsPositions[i] = [(board.length-1)*sizeX,(board[0].length-1)*sizeY];//bottom right corner
 				ghostTarget.push([(board.length-1)*sizeX,(board[0].length-1)*sizeY]);
 				ghostGoToCorner.push(false);
 				break;		
@@ -980,8 +998,7 @@ function setGameTimer(){
 			$("#timeLabel").css("color","red");
 		}
 		if(timeOfGame==0){
-			setGameTimeLabel();
-			stopGamesIntervals();
+			setGameTimeLabel();			
 			finishGame();
 		}
 	},1000);
