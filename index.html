@@ -38,7 +38,8 @@
 				<div class="formDiv">
 				<input type="text" id="userName" name="userName" placeholder="user name" class="formInput" style="height: 100%;"/>
 				<input type="password" id="password" name="password" placeholder="password" class="formInput">
-				<input type="text" id="fullName" name="fullName" placeholder="full name" class="formInput">
+				<input type="text" id="fullName" name="fullName" placeholder="First name" class="formInput">
+				<input type="text" id="lastName" name="lastName" placeholder="Last name" class="formInput">
 				<input type="text" id="email" name="email" placeholder="email" class="formInput">
 				<input type="date" id="birthDate" name="birthDate" class="formInput">
 				<button type="submit" id="submitButton" class="submitButtons" >Register</button>
@@ -82,6 +83,8 @@
 					<button class="gameButtons" id="newGameButton" onclick="showSettings()">Start new game</button>
 					<button id="stopGameButton" class="gameButtons" onclick="stopGame()">Pause game</button>
 					<button id="resumeGameButton" class="gameButtons" onclick="resumeGame()">Resume game</button>
+					<button id="stopMusicButton" class="gameButtons" onclick="pauseMusic()">Pause music</button>
+					<button id="resumeMusicButton" class="gameButtons" onclick="resumeMusic()">Resume Music</button>
 				</div>
 				
 			</div>

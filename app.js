@@ -1,5 +1,5 @@
 //usersDict : [userName] = [password, fullName, email, birthDate]
-let usersDict={"k":["k", "", "", ""]};
+let usersDict={"k":["k", "", "", "",""]};
 let currentDisplayedDiv="#welcomeContainer";
 let keys={"Up":"","Down":"","Left":"","Right":""};
 let validSettingsData=true;
@@ -48,6 +48,7 @@ let bonusTime;
 let bonusTimeTolive = 100*5;
 let gameStopped=false;
 
+// add method that checks if the password contains 1 digit and 1 letter to validator
 $(function(){
 	$.validator.addMethod("checkPassword",function(value,element){
 		let containsLetters=false;
@@ -75,13 +76,14 @@ $(function(){
 	});
 })
 
+// add method that checks if user name is free to validator
 $(function(){
 	$.validator.addMethod("freeUserName",function(value,element){
 		return !(value in usersDict);
 	});
 })
 
-
+//add method that checks if full name contains only letters
 $(function(){
 	$.validator.addMethod("checkName",function(value,element){
 		for(let i=0;i<value.length;i++){
@@ -96,7 +98,6 @@ $(function(){
 
 $(document).ready(function(){
 	ctx=document.getElementById("myCanvas").getContext("2d");
-	//$("#submitButton").click(validateDataAfterRegistretion);
 	let slider=document.getElementById("ballsSlider");
 	let ballsValue=document.getElementById("ballsValue");
 	slider.oninput=function(){
@@ -112,7 +113,7 @@ $(document).ready(function(){
 			event.preventDefault();
 		}
 	},false);
-	$("#registerForm").validate({
+	$("#registerForm").validate({//validate registration using jquery validator
 		rules:{
 			userName:{
 				required:true,
@@ -124,6 +125,10 @@ $(document).ready(function(){
 				minlength:6
 			},
 			fullName:{
+				required:true,
+				checkName:true
+			},
+			lastName:{
 				required:true,
 				checkName:true
 			},
@@ -144,8 +149,12 @@ $(document).ready(function(){
 				minlength:"Password must be at least 6 chars"
 			},
 		fullName:{
-			required:"Please enter full name",
-			checkName:"full name must contain only letters"
+			required:"Please enter first name",
+			checkName:"First name must contain only letters"
+		},
+		lastName:{
+			required:"Please enter last name",
+			checkName:"Last name must contain only letters"
 		},
 		email:{
 			required:"Please enter email",
@@ -156,9 +165,10 @@ $(document).ready(function(){
 			let userName=$("#userName").val();
 			let password=$("#password").val();
 			let fullName=$("#fullName").val();
+			let lasName=$("#lastName").val();
 			let email=$("#email").val();
 			let birthDate=$("#birthDate").val();
-			usersDict[userName]=[password, fullName, email, birthDate];
+			usersDict[userName]=[password, fullName,lasName, email, birthDate];
 			form.reset();
 			showWelcomeScreen();
 		}
@@ -166,28 +176,30 @@ $(document).ready(function(){
 
 	});
 
-
+/**
+ * This function validates the entered data after log in
+ */
 function validateDetailsAfterLogIn(){
 	let validLogIn=true;
 	$(".errorFormRow").css("display","none");
 	let userName=$('#LIuserName').val();
-	if(userName==""){
+	if(userName==""){//if user name empty
 		showErrorMessage("#errorLogInUsername","Empty user name");
 		validLogIn=false;
 	}
 	
 	let password=$("#LIpassword").val();
-	if(password==""){
+	if(password==""){//if password empty
 		showErrorMessage("#errorPasswordLogIn","Empty password");
 		validLogIn=false;
 	}
 
-	if (!(userName in usersDict)){
+	if (!(userName in usersDict)){//if user name exist
 		showErrorMessage("#errorLogInUsername","User name doesn't exist");
 		validLogIn=false;
 	}
 
-	if (validLogIn && password == usersDict[userName][0]){
+	if (validLogIn && password == usersDict[userName][0]){//if password match to username
 		loggedUser=userName;
 		showSettings();
 	}
@@ -195,7 +207,11 @@ function validateDetailsAfterLogIn(){
 		showErrorMessage("#errorPasswordLogIn","Password incorrect");
 	}
 }
-
+/**
+ * This function shows relevant error message
+ * @param {*} rowId jquery selector of the error row element
+ * @param {*} message  message to show
+ */
 function showErrorMessage(rowId,message){
 	$(rowId).html(message);
 	$(rowId).css("display","block");
@@ -249,12 +265,15 @@ function switchDivs(newDivToSwitchTo,display){
 	$(newDivToSwitchTo).css("display",display);
 }
 
+/**
+ * This function stop the game intervals when game is finished
+ */
 function stopGamesIntervals(){
 	gameIntervals.forEach(function(item){
 		clearInterval(item);
 	});
 	gameIntervals=[];
-	backgroundSong.pause();
+	backgroundSong.pause();//stop background song
 	backgroundSong.currentTime=0;
 }
 
@@ -279,6 +298,9 @@ function setKeyPressed(keyIdToSet){
 	});
 }
 
+/**
+ * This function validates the settings the user choose
+ */
 function validateSettings(){
 	$(".errorRow").css("display","none");
 	validSettingsData=true;
@@ -292,8 +314,8 @@ function validateSettings(){
 	let twentyFivePointsColorPicker=$("#twentyFivePointsColorPicker").val();
 	let gameTime=$("#gameTimeInput").val();
 	let numberOfMonsters=$("#monstersSlider").val();
-	checkKeysSettings(keyup,keyDown,keyLeft,keyRight);
-	if(checkSingleNumericValue(gameTime,60,0,"#gameTimeError","","Game time must be at least 60 seconds!")){
+	checkKeysSettings(keyup,keyDown,keyLeft,keyRight);//check keys
+	if(checkSingleNumericValue(gameTime,60,0,"#gameTimeError","","Game time must be at least 60 seconds!")){//check the time
 		timeOfGame=parseInt(gameTime);
 	}
 	if(validSettingsData){
@@ -312,13 +334,13 @@ function validateSettings(){
 }
 
 function checkSingleNumericValue(numericValue,min,max,rowId,message1,message2){
-	if(numericValue==""){
+	if(numericValue==""){//if empty
 		$(rowId+" td").html("Please enter value");
 		$(rowId).css("display","block");
 		validSettingsData=false;
 		return false;
 	}
-	if(isNaN(numericValue)){
+	if(isNaN(numericValue)){//if not a number
 		$(rowId+" td").html(message1);
 		$(rowId).css("display","block");
 		validSettingsData=false;
@@ -326,7 +348,7 @@ function checkSingleNumericValue(numericValue,min,max,rowId,message1,message2){
 	}
 	let intNumericValue=parseInt(numericValue);
 	if(max==0){
-		if(intNumericValue<min){
+		if(intNumericValue<min){//if less than 60 seconds
 			$(rowId+" td").html(message2);
 			$(rowId).css("display","block");
 			validSettingsData=false;
@@ -334,7 +356,7 @@ function checkSingleNumericValue(numericValue,min,max,rowId,message1,message2){
 		}
 		return true;
 	}
-	if(intNumericValue<min || intNumericValue>max){
+	if(intNumericValue<min || intNumericValue>max){//if not in range
 		$(rowId+" td").html(message2);
 		$(rowId).css("display","block");
 		validSettingsData=false;
@@ -343,23 +365,52 @@ function checkSingleNumericValue(numericValue,min,max,rowId,message1,message2){
 	return true;
 }
 
+/**
+ * This function check the keys entered by the user
+ * @param {} keyUp string value of key up
+ * @param {*} keyDown string value of key down
+ * @param {*} keyLeft string value of key left
+ * @param {*} keyRight string value of key right
+ */
 function checkKeysSettings(keyUp,keyDown,keyLeft,keyRight){
 	showKeyErrorMessage(keyUp,"#errorKeyUp","Up");
 	showKeyErrorMessage(keyDown,"#errorKeyDown","Down");
 	showKeyErrorMessage(keyLeft,"#errorLeftKey","Left");
 	showKeyErrorMessage(keyRight,"#rightKeyError","Right");
+	let showed=false;
+	$.each(keys,function(index,value){//check if there is no 2 same keys
+		$.each(keys,function(index1,value1){
+			if(index!=index1){
+				if(value==value1 && !showed){
+					validSettingsData=false;
+					alert("2 keys are the same");
+					showed=true;
+				}
+			}
+		});
+	});
 }
 
+/**
+ * This function checks if the key is empty and if yes shows error message
+ * @param {*} keyToCheck the key to check
+ * @param {*} rowId jquery selector of error row to show
+ * @param {*} direction direction of the key(up,down,left,right)
+ */
 function showKeyErrorMessage(keyToCheck,rowId,direction){
-	if(keyToCheck==""){
+	if(keyToCheck==""){//check if key is empty
 		$(rowId).css("display","block");
 		validSettingsData=false;
 		}
+	
 	else{
 		keys[direction]=keyToCheck;
 	}
 }
 
+/**
+ * This function generate random settings
+ */
 function generateRandomSettings(){
 	keys["Up"]="ArrowUp";
 	keys["Down"]="ArrowDown";
@@ -383,6 +434,9 @@ function getRandomColor() {
 	return color;
 }
 
+/**
+ * This function updates the settings values in html
+ */
 function updateSettingsValues(){
 	$("#keyUp").val("ArrowUp");
 	$("#keyDown").val("ArrowDown");
@@ -398,7 +452,9 @@ function updateSettingsValues(){
 	document.getElementById("monstersNumber").innerHTML=monstersNumber;
 }
 
-
+/**
+ * This function creates the game board
+ */
 function generateBoard(){
 	// init board
 	for(let i=0;i<board.length;i++){
@@ -408,13 +464,15 @@ function generateBoard(){
 		}
 	}
 	sizeY=450 / board[0].length;
-	setWallsOnBoard();
-	setBallsOnBoard();
+	setWallsOnBoard();//set walls in board
+	setBallsOnBoard();//set balls in board
 	$("#settingsButton").css("display","none");
 	$("#randomButton").css("display","none");
 	
 }
-
+/**
+ * This function sets the walls of the board
+ */
 function setWallsOnBoard(){
 	board[1][0]=1;
 	board[2][0]=1;
@@ -430,7 +488,6 @@ function setWallsOnBoard(){
 	board[4][8]=1;
 	board[5][7]=1;
 	board[5][8]=1;
-	board[5][9]=1;
 	board[7][0]=1;
 	board[7][1]=1;
 	board[8][0]=1;
@@ -448,6 +505,9 @@ function setWallsOnBoard(){
 	board[12][8]=1;
 }
 
+/**
+ * This function generates balls on board
+ */
 function setBallsOnBoard(){
 	let numberOfFiveBalls = parseInt(ballsNumber * 0.6);
 	let numberOfFifteen = parseInt(ballsNumber * 0.3);
@@ -473,43 +533,10 @@ function setBallsOnBoard(){
 	})();
 }
 
-
-function setCornersToFree(numberOfFreeCells){
-	if(board[0][0]!=0){
-		numberOfFreeCells++;
-		board[0][0]=0;
-		if(board[1][0]==1 && board[0][1]==1){
-			board[1][0]=0;
-			numberOfFreeCells++;
-		}
-	}
-	if(board[0][board[0].length-1]!=0){
-		board[0][board[0].length-1]=0;
-		numberOfFreeCells++;
-		if(board[1][board[0].length-1]==1 && board[0][board[0].length-2]==1){
-			board[1][board[0].length-1]=0;
-			numberOfFreeCells++;
-		}
-	}
-	if(board[board.length-1][0]!=0){
-		board[board.length-1][0]=0;
-		numberOfFreeCells++;
-		if(board[board.length-2][0]==1 && board[board.length-1][1]==1){
-			board[board.length-1][1]=0;
-			numberOfFreeCells;
-		}
-	}
-	if(board[board.length-1][board[0].length-1]!=0){
-		board[board.length-1][board[0].length-1]=0;
-		numberOfFreeCells++;
-		if(board[board.length-1][board[0].length-2]==1 && board[board.length-2][board[0].length-1]==1){
-			board[board.length-2][board[0].length-1]=0;
-			numberOfFreeCells++;
-		}
-	}
-	return numberOfFreeCells;
-}
-
+/**
+ * This function shuffels the directions to go
+ * @returns shuffled directions array
+ */
 function createDirections(){
 	let directions=[1,2,3,4];
 	for (let i = directions.length - 1; i > 0; i--) {//shuffle directions
@@ -519,12 +546,15 @@ function createDirections(){
 	return directions;
 }
 
+/**
+ * function before start game
+ */
 function startGame(){
 	$("#userNameToShow").html(loggedUser);
 	initParams();
 	$("#scoreLabel").html("0");
 	backgroundSong.loop=true;
-	//backgroundSong.play();
+	backgroundSong.play();
 	generateBoard();
 	initPacmanPosition();
 	initCherry();
@@ -536,6 +566,9 @@ function startGame(){
 	initGhostCorners();
 }
 
+/**
+ * This function initializes the parameters needed for the game before the game starts
+ */
 function initParams(){
 	countCandy=0;
 	score=0;
@@ -545,6 +578,9 @@ function initParams(){
 	ghostSpeed = 1.5;
 }
 
+/**
+ * This function sets the game intervals(clock and canvas)
+ */
 function setGameIntervals(){
 	intervalTimer = setInterval(main, 25); // Execute as fast as possible
 	gameIntervals.push(intervalTimer);
@@ -558,6 +594,9 @@ function stopTimer()
    	window.clearInterval( intervalTimer );
 } 
 
+/**
+ * interval function
+ */
 function main(){
 	drawMap();
 	drawBonuses();
@@ -573,6 +612,9 @@ function main(){
 	changeGhostsLocations();
 }
 
+/**
+ * This function updates the time label with current time in format MM:SS
+ */
 function setGameTimeLabel(){
 	let minutes=0;
 	let time=timeOfGame;
@@ -589,6 +631,9 @@ function setGameTimeLabel(){
 	
 }
 
+/**
+ * function for game finish
+ */
 function finishGame(){
 	drawMap();
 	drawBonuses();
@@ -608,6 +653,9 @@ function finishGame(){
 	$("#resumeGameButton").css("display","none");
 }
 
+/**
+ * This function draws the cherry
+ */
 function drawCherry(){
 	cherryX += cherrySpeedX;
 	cherryY += cherrySpeedY;
@@ -623,17 +671,10 @@ function drawCherry(){
 	ctx.drawImage(img, cherryX, cherryY, 50, 40);
 }
 
+/**
+ * This function initializes the cherry at the start of the game
+ */
 function initCherry(){
-	/*//choose random point and direction start for the cherry
-	cherryX = Math.floor(Math.random() * 800) + 50;
-	cherryY = Math.floor(Math.random() * 400) + 25;
-	let pythagorasDistance = Math.pow(Math.pow(cherryX - pacX, 2) + Math.pow(cherryY - pacY, 2), 0.5);
-
-	while(pythagorasDistance < 100){
-		cherryX = Math.floor(Math.random() * 800) + 50;
-		cherryY = Math.floor(Math.random() * 400) + 25;
-		pythagorasDistance = Math.pow(Math.pow(cherryX - pacX, 2) + Math.pow(cherryY - pacY, 2), 0.5);
-	}*/
 	cherryX = 900/2;
 	cherryY = 450/2;
 
@@ -650,6 +691,9 @@ function initCherry(){
 	drawCherry();
 }
 
+/**
+ * This function draws the board in each interval
+ */
 function drawMap(){
 	ctx.clearRect(0, 0, 900, 450);
 	for(let x=0; x<board.length; x+=1){
@@ -673,6 +717,9 @@ function drawMap(){
 	}
 }
 
+/**
+ * This function draws the pacman in each interval
+ */
 function drawPacman(){
 	
 	//change size of the mouth.
@@ -728,6 +775,7 @@ function drawPacmanInDirection(startAngle,endAngle,eyeX,eyeY){
 	ctx.fill();
 }
 
+//set listeners on pacman movment keys
 document.addEventListener('keydown', function (event) {
 	if (event.key === keys["Up"])
 		pacDirection = "up";
@@ -1105,24 +1153,6 @@ function changeGhostsLocations(){
 			demoPacY = pacY - pacRadius;			
 		}
 
-		/*// make sure the ghost won't go together.
-		if (j < 2){
-			if (Math.abs(ghostX - demoPacX) > 40){
-				if (j == 0)
-					demoPacX -= 30;
-				if (j == 1)
-					demoPacX += 30;
-			}
-		}
-		else{
-			if (Math.abs(ghostY - demoPacY) > 40){
-				if (j == 2)
-					demoPacY -= 30;
-				if (j == 3)
-					demoPacY += 30;
-			}
-		}*/
-
 		//check available directions.
 		if (!(checkWall(ghostX, ghostY-ghostSpeed) || checkWall(ghostX+ghostWidth, ghostY-ghostSpeed)))
 			availableDirectionsY.push("up");
@@ -1249,8 +1279,6 @@ window.onclick=function(event){
 	}
 }
 
-
-
 function stopGame(){
 	stopGamesIntervals();
 	gameStopped=true;
@@ -1283,6 +1311,14 @@ function changeSettingsReadOnlyPrperty(addReadOnly){
 	document.getElementById("gameTimeInput").readOnly=addReadOnly;
 	document.getElementById("ballsSlider").disabled=addReadOnly;
 	document.getElementById("monstersSlider").disabled=addReadOnly;
+}
+
+function pauseMusic(){
+	backgroundSong.pause();
+}
+
+function resumeMusic(){
+	backgroundSong.play();
 }
 
 function toDelete(){
