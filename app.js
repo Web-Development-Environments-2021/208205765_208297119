@@ -588,12 +588,6 @@ function setGameIntervals(){
 	drawLives();
 }
 
-// terminate interval timer
-function stopTimer()
-{  
-   	window.clearInterval( intervalTimer );
-} 
-
 /**
  * interval function
  */
@@ -1314,12 +1308,4 @@ function pauseMusic(){
 
 function resumeMusic(){
 	backgroundSong.play();
-}
-
-function toDelete(){
-	stopTimer();
-	showSettings();
-	generateRandomSettings();
-	$("#gameDiv").css("display","block");
-	startGame();
 }
