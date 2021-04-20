@@ -576,6 +576,7 @@ function initParams(){
 	pacSpeed = 4;
 	gameStopped=false;
 	ghostSpeed = 1.5;
+	backgroundSong.volume = 0.5;
 }
 
 /**
