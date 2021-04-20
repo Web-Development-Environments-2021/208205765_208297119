@@ -1,5 +1,5 @@
 //usersDict : [userName] = [password, fullName, email, birthDate]
-let usersDict={"k":["k", "", "", "",""]};
+let usersDict={"k":["k", "", "", "", ""]};
 let currentDisplayedDiv="#welcomeContainer";
 let keys={"Up":"","Down":"","Left":"","Right":""};
 let validSettingsData=true;
@@ -22,6 +22,8 @@ let loggedUser;
 let gameIntervals=[];
 let cherryX = 0;
 let cherryY = 0;
+let cherryCounter;
+let cherryDirection;
 let cherrySpeedX = 5;
 let cherrySpeedY = 5;
 let sizeX = 900 / board.length;
@@ -658,14 +660,57 @@ function handleCherry(){
 		changeScore(50);
 	}
 
-	cherryX += cherrySpeedX;
-	cherryY += cherrySpeedY;
+	if (cherryCounter > 0){
+		switch (cherryDirection){
+			case "up":
+				if (checkWall(cherryX, cherryY-cherrySpeedY) || checkWall(cherryX+50, cherryY-cherrySpeedY))
+					cherryCounter = 0;
+				break;
+			case "down":
+				if (checkWall(cherryX, cherryY+cherrySpeedY+40) || checkWall(cherryX+50, cherryY+cherrySpeedY+40))
+					cherryCounter = 0;
+				break;
+			case "left":
+				if (checkWall(cherryX-cherrySpeedX, cherryY) || checkWall(cherryX-cherrySpeedX, cherryY+40))
+					cherryCounter = 0;
+				break;
+			case "right":
+				if (checkWall(cherryX+cherrySpeedX+50, cherryY) || checkWall(cherryX+cherrySpeedX+50, cherryY+40))
+					cherryCounter = 0;
+				break;
+		}
+	}
 
-	if (cherryX+50 >= 900 || cherryX <= 0)
-		cherrySpeedX *= -1;
+	if (cherryCounter == 0){
+		let availableDirections = [];
+		//check available directions.
+		if (!(checkWall(cherryX, cherryY-cherrySpeedY) || checkWall(cherryX+50, cherryY-cherrySpeedY)))
+		availableDirections.push("up");
+		if (!(checkWall(cherryX, cherryY+cherrySpeedY+40) || checkWall(cherryX+50, cherryY+cherrySpeedY+40)))
+			availableDirections.push("down");
+		if (!(checkWall(cherryX-cherrySpeedX, cherryY) || checkWall(cherryX-cherrySpeedX, cherryY+40)))
+			availableDirections.push("left");
+		if (!(checkWall(cherryX+cherrySpeedX+50, cherryY) || checkWall(cherryX+cherrySpeedX+50, cherryY+40)))
+			availableDirections.push("right");
+		cherryCounter = 15;
+		cherryDirection = availableDirections[Math.floor(Math.random() * availableDirections.length)];
+	}
 	
-	if (cherryY+40 >= 450 || cherryY <= 0)
-		cherrySpeedY *= -1;
+	switch (cherryDirection){
+		case "up":
+			cherryY -= cherrySpeedY;
+			break;
+		case "down":
+			cherryY += cherrySpeedY;
+			break;
+		case "left":
+			cherryX -= cherrySpeedX;
+			break;
+		case "right":
+			cherryX += cherrySpeedX;
+			break;
+	}
+	cherryCounter--;
 
 	let img = new Image();
 	img.src = "Img/cherry.png";
@@ -676,19 +721,11 @@ function handleCherry(){
  * This function initializes the cherry at the start of the game
  */
 function initCherry(){
-	cherryX = 900/2;
-	cherryY = 450/2;
-
-	let cherrySpeed = 5;
-	if (Math.random() > 0.5)
-		cherrySpeedX = cherrySpeed;
-	else
-		cherrySpeedX = -1 * cherrySpeed;
-
-	if (Math.random() > 0.5)
-		cherrySpeedY = cherrySpeed;
-	else
-		cherrySpeedY = -1 * cherrySpeed;
+	cherryX = 360;
+	cherryY = 225;
+	cherryCounter = 15;
+	cherrySpeedX = 4;
+	cherrySpeedY = 3;
 	handleCherry();
 }
 
