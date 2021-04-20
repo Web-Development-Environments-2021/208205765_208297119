@@ -600,11 +600,7 @@ function stopTimer()
 function main(){
 	drawMap();
 	drawBonuses();
-	drawCherry();	
-	if (pacmanContact(cherryX+10, cherryY+5, 26, 22)){
-		initCherry();
-		changeScore(50);
-	}
+	handleCherry();	
 
 	drawGhosts();
 	drawPacman();
@@ -632,12 +628,12 @@ function setGameTimeLabel(){
 }
 
 /**
- * function for game finish
+ * function for game finish.
  */
 function finishGame(){
 	drawMap();
 	drawBonuses();
-	drawCherry();	
+	handleCherry();	
 
 	drawGhosts();
 	drawPacman();
@@ -654,9 +650,14 @@ function finishGame(){
 }
 
 /**
- * This function draws the cherry
+ * This function handle the cherry movement, direction, draw and check if touch pacman.
  */
-function drawCherry(){
+function handleCherry(){
+	if (pacmanContact(cherryX+10, cherryY+5, 26, 22)){
+		initCherry();
+		changeScore(50);
+	}
+
 	cherryX += cherrySpeedX;
 	cherryY += cherrySpeedY;
 
@@ -688,7 +689,7 @@ function initCherry(){
 		cherrySpeedY = cherrySpeed;
 	else
 		cherrySpeedY = -1 * cherrySpeed;
-	drawCherry();
+	handleCherry();
 }
 
 /**
@@ -841,8 +842,7 @@ function checkWall(x, y){
 		return true;
 	let i = Math.floor(x / 60);
 	let j = Math.floor(y / 45);
-	let wall = board[i][j];
-	if (wall == 1)
+	if (board[i][j] == 1)
 		return true;
 	return false;
 }
@@ -1139,7 +1139,6 @@ function changeGhostsLocations(){
 		let minY = ghostY;
 		let bestDistanceX = 99999999999;
 		let bestDistanceY = 99999999999;
-		let changed=false;
 
 		goToCorner(j)
 		let demoPacX;
@@ -1170,7 +1169,6 @@ function changeGhostsLocations(){
 					if (newDist < bestDistanceY){
 						minY = ghostY - ghostSpeed;
 						bestDistanceY = newDist;
-						changed=true;
 					}
 					break;
 				case "down":
@@ -1178,7 +1176,6 @@ function changeGhostsLocations(){
 					if (newDist < bestDistanceY){
 						minY = ghostY + ghostSpeed;
 						bestDistanceY = newDist;
-						changed=true;
 					}
 					break;
 				default:
@@ -1193,7 +1190,6 @@ function changeGhostsLocations(){
 					if (newDist < bestDistanceX){
 						minX = ghostX - ghostSpeed;
 						bestDistanceX = newDist;
-						changed=true;
 					}
 					break;
 				case "right":
@@ -1201,7 +1197,6 @@ function changeGhostsLocations(){
 					if (newDist < bestDistanceX){
 						minX = ghostX + ghostSpeed;
 						bestDistanceX = newDist;
-						changed=true;
 					}
 					break;
 				default:
