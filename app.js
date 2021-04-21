@@ -88,7 +88,7 @@ $(function(){
 	$.validator.addMethod("checkName",function(value,element){
 		for(let i=0;i<value.length;i++){
 			let asciiValue=value.charAt(i).charCodeAt(0);
-			if(asciiValue>=123 || asciiValue<=96){
+			if(!((asciiValue<123 && asciiValue>96) || (asciiValue>=65 && asciiValue<=90))){
 				return false;
 			}
 		}
