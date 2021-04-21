@@ -101,7 +101,7 @@ $(document).ready(function(){
 	let slider=document.getElementById("ballsSlider");
 	let ballsValue=document.getElementById("ballsValue");
 	slider.oninput=function(){
-		ballsValue.innerHTML=this.value;
+		ballsValue.innerHTML=this.value;//change html label value when user using the slider
 	}
 	let monstersSlider=document.getElementById("monstersSlider");
 	let monstersValue=document.getElementById("monstersNumber");
@@ -217,22 +217,26 @@ function showErrorMessage(rowId,message){
 	$(rowId).css("display","block");
 }
 
+//this function shows register screen
 function register(){
 	$(".errorFormRow").css("display","none");
-	document.getElementById("registerForm").reset();
+	document.getElementById("registerForm").reset();//reset register form
 	switchDivs("#outerRegisterDiv","flex");	
 }
 
+//this function shows log in screen
 function logIn(){
 	$(".errorFormRow").css("display","none");
-	document.getElementById("logInForm").reset();
+	document.getElementById("logInForm").reset();//reset log in form
 	switchDivs("#outerLogInDiv","flex");
 }
 
+//this function shows welcome screen
 function showWelcomeScreen(){
 	switchDivs("#welcomeContainer","flex");
 }
 
+//this function shows choose settings screen
 function showSettings(){
 	document.getElementById("settingsForm").reset();
 	changeSettingsReadOnlyPrperty(false);
@@ -318,7 +322,7 @@ function validateSettings(){
 	if(checkSingleNumericValue(gameTime,60,0,"#gameTimeError","","Game time must be at least 60 seconds!")){//check the time
 		timeOfGame=parseInt(gameTime);
 	}
-	if(validSettingsData){
+	if(validSettingsData){//if all settings input are valid
 		ballsColors["5"]=fivePointsBallColor;
 		ballsColors["15"]=fifteenPointsColorPicker;
 		ballsColors["25"]=twentyFivePointsColorPicker;
@@ -333,6 +337,16 @@ function validateSettings(){
 	}
 }
 
+/**
+ * This function checks the time entered by the user
+ * @param {} numericValue time to check
+ * @param {*} min min value of time
+ * @param {*} max max value of time(0 if not upper bounded)
+ * @param {*} rowId jquery row selector of the error row
+ * @param {*} message1 
+ * @param {*} message2 error message
+ * @returns 
+ */
 function checkSingleNumericValue(numericValue,min,max,rowId,message1,message2){
 	if(numericValue==""){//if empty
 		$(rowId+" td").html("Please enter value");
@@ -377,18 +391,20 @@ function checkKeysSettings(keyUp,keyDown,keyLeft,keyRight){
 	showKeyErrorMessage(keyDown,"#errorKeyDown","Down");
 	showKeyErrorMessage(keyLeft,"#errorLeftKey","Left");
 	showKeyErrorMessage(keyRight,"#rightKeyError","Right");
-	let showed=false;
-	$.each(keys,function(index,value){//check if there is no 2 same keys
-		$.each(keys,function(index1,value1){
-			if(index!=index1){
-				if(value==value1 && !showed){
-					validSettingsData=false;
-					alert("2 keys are the same");
-					showed=true;
+	if(validSettingsData){// if all keys were inserted
+		let showed=false;
+		$.each(keys,function(index,value){//check if there is no 2 same keys
+			$.each(keys,function(index1,value1){
+				if(index!=index1){
+					if(value==value1 && !showed){
+						validSettingsData=false;
+						alert("2 keys are the same");
+						showed=true;
+					}
 				}
-			}
+			});
 		});
-	});
+	}
 }
 
 /**
@@ -425,6 +441,10 @@ function generateRandomSettings(){
 	updateSettingsValues();
 	}
 
+	/**
+	 * This function generates random color
+	 * @returns str random color
+	 */
 function getRandomColor() {
 	let letters = '0123456789ABCDEF';
 	let color = '#';
@@ -518,11 +538,12 @@ function setBallsOnBoard(){
 	(function() {
 		while(counter > 0)
 		{
+			//generate random position to set the ball
 			let i = Math.floor(Math.random()*board.length);
 			let j = Math.floor(Math.random()*board[0].length);
-			if(board[i][j]==0){
+			if(board[i][j]==0){//if free cell
 				let ball = Math.floor(Math.random()*3);
-				while(arrayOfCounters[ball]==0){
+				while(arrayOfCounters[ball]==0){//if no free balls of the type choosen are left
 					ball=Math.floor(Math.random()*3);
 				}
 				board[i][j] = numToPrice[ball];
@@ -648,7 +669,7 @@ function finishGame(){
  * This function handle the cherry movement, direction, draw and check if touch pacman.
  */
 function handleCherry(){
-	if (pacmanContact(cherryX+10, cherryY+5, 26, 22)){
+	if (pacmanContact(cherryX+10, cherryY+5, 26, 22)){//if pacman touch cherry
 		initCherry();
 		changeScore(50);
 	}
@@ -656,9 +677,11 @@ function handleCherry(){
 	cherryX += cherrySpeedX;
 	cherryY += cherrySpeedY;
 
+	//check if not going out of canvas width
 	if (cherryX+50 >= 900 || cherryX <= 0)
 		cherrySpeedX *= -1;
 	
+		//check if not going out of canvas height
 	if (cherryY+40 >= 450 || cherryY <= 0)
 		cherrySpeedY *= -1;
 
@@ -694,7 +717,7 @@ function drawMap(){
 	ctx.clearRect(0, 0, 900, 450);
 	for(let x=0; x<board.length; x+=1){
 		for(let y=0; y<board[0].length; y+=1){
-			if (board[x][y] == 1){
+			if (board[x][y] == 1){//if wall
 				ctx.fillStyle = "black";
 				ctx.fillRect(x*sizeX, y*sizeY, sizeX, sizeY);
 			}
@@ -723,7 +746,7 @@ function drawPacman(){
 		swicthAngle *= -1;
 	angle = swicthAngle * 0.02 + angle;
 
-	switch (pacDirection) {
+	switch (pacDirection) {//draw pacman in direction(up/down/left/right)
 		case "right":
 			drawPacmanInDirection(0.2,1.8,pacX,pacY-10);
 			break;
@@ -745,6 +768,13 @@ function drawPacman(){
 	}
 }
 
+/**
+ * This function draws the pacman in specific direction
+ * @param {*} startAngle start angle of the pacman
+ * @param {*} endAngle end angle of the pacman
+ * @param {*} eyeX x cordinate of the eye
+ * @param {*} eyeY y cordinate of the eye
+ */
 function drawPacmanInDirection(startAngle,endAngle,eyeX,eyeY){
 	// An arc with an opening at the right for the mouth
 	ctx.beginPath();
@@ -786,12 +816,15 @@ document.addEventListener('keydown', function (event) {
 		pacDirection = "right";
 
 	if(event.key=="Escape"){
-		if(document.getElementById("modalDiv").style.display!="none"){
+		if(document.getElementById("modalDiv").style.display!="none"){//if about window is currently displaying
 			closeAbout();
 		}
 	}
 });
 
+/**
+ * This function updates the location of the pacman
+ */
 function movePacman(){
 	let didMove = false;
 	switch (pacDirection){
@@ -842,14 +875,18 @@ function checkWall(x, y){
 	return false;
 }
 
+/**
+ * This function checks if pacman touches any candy
+ * @returns 
+ */
 function touchCandy(){
 	let i = Math.floor(pacX / sizeX);
 	let j = Math.floor(pacY / sizeY);
-	if (board[i][j] == 0 || board[i][j] == 1)
+	if (board[i][j] == 0 || board[i][j] == 1)//if pacman touch wall or free space without candy
 		return;
 	
 	let thisRadiusCandys = radiusCandys[board[i][j]];
-	if (pacmanContact(i*sizeX + sizeX/2 - thisRadiusCandys, j*sizeY + sizeY/2 - thisRadiusCandys, thisRadiusCandys*2, thisRadiusCandys*2)){
+	if (pacmanContact(i*sizeX + sizeX/2 - thisRadiusCandys, j*sizeY + sizeY/2 - thisRadiusCandys, thisRadiusCandys*2, thisRadiusCandys*2)){//if pacman touch candy
 		changeScore(board[i][j]);
 		board[i][j] = 0;
 		countCandy++;
@@ -907,6 +944,9 @@ function pacmanContact(x, y, width, heigh){
 	return false;
 }
 
+/**
+ * This function inits the pacman position
+ */
 function initPacmanPosition(){
 	//choose random empty point for pacman at start of game that not in the edges of the bord.
 	let found = false;
@@ -915,6 +955,7 @@ function initPacmanPosition(){
 	while (!found){
 		i = Math.floor(Math.random() * board.length);
 		j = Math.floor(Math.random() * board[0].length);
+		//if generated indexes are not in corners and the cell is free
 		if (board[i][j] != 1 && (i != 0 && j != 0) && (i != board.length-1 && j != 0) && (i != board.length-1 && j != board[0].length-1) && (i != 0 && j != board[0].length-1))
 			found = true;
 	}
@@ -922,6 +963,10 @@ function initPacmanPosition(){
 	pacY = j * 45 + 22;
 }
 
+/**
+ * This function generates a position for medication or strwaberry to show
+ * @param {*} what the object(medication or strwaberry)
+ */
 function initBonusPosition(what){
 	//choose random empty point for the bonuses.
 	let found = false;
@@ -945,13 +990,16 @@ function initBonusPosition(what){
 	}
 }
 
+/**
+ * This function draw the bonuses(medication or strwaberry)
+ */
 function drawBonuses(){
 	if (bonusTime <= bonusTimeTolive){
 		let img = new Image();
 		img.src = "Img/drug.jpg";
 		ctx.drawImage(img, medicationX, medicationY, 50, 40);
 		
-		if (pacmanContact(medicationX, medicationY, 50, 40)){
+		if (pacmanContact(medicationX, medicationY, 50, 40)){//if pacman touched medication
 			changeLives(1);
 			initBonusPosition("strawberry");
 			pacSpeed++;
@@ -980,9 +1028,12 @@ function drawBonuses(){
 	bonusTime--;
 }
 
+/**
+ * This function initializes the positions of yhe ghosts at the start of the game
+ */
 function initGhostPositions(){
-	let directions=createDirections();
-	for(let i=0;i<monstersNumber;i++){
+	let directions=createDirections();//get random directions
+	for(let i=0;i<monstersNumber;i++){//set each monster in random corner
 		switch (directions[i]) {
 			case 1:
 				ghostsPositions[i] = [0,0];//top left corner
@@ -1001,6 +1052,7 @@ function initGhostPositions(){
 		}
 	}
 }
+
 
 function initGhostCorners(){
 	let directions=createDirections();
@@ -1048,6 +1100,9 @@ function setGameTimer(){
 	gameIntervals.push(timer);
 }
 
+/**
+ * This function updates the time label
+ */
 function setGameTimeLabel(){
 	let minutes=0;
 	let time=timeOfGame;
@@ -1064,6 +1119,9 @@ function setGameTimeLabel(){
 	
 }
 
+/**
+ * This function intializes ghost pictures array
+ */
 function initGhostsArr(){
 	ghostsArr = [];
 	switch (monstersNumber) {
@@ -1245,9 +1303,12 @@ function drawLives(){
 	}
 }
 
+/**
+ * This function shows about screen
+ */
 function aboutScreen(){
 	if(currentDisplayedDiv=="#gameAndSettingsDiv"){
-		if(document.getElementById("gameDiv").style.display!="none"){
+		if(document.getElementById("gameDiv").style.display!="none"){//if game div is displayed, pause the game
 			stopGamesIntervals();
 		}
 	}
@@ -1256,7 +1317,7 @@ function aboutScreen(){
 
 function closeAbout(){
 	if(currentDisplayedDiv=="#gameAndSettingsDiv"){
-		if(document.getElementById("gameDiv").style.display!="none" && !gameStopped){
+		if(document.getElementById("gameDiv").style.display!="none" && !gameStopped){//if game div was displayed, resume the game
 			setGameIntervals();
 		}
 	}
@@ -1281,6 +1342,10 @@ function resumeGame(){
 	}
 }
 
+/**
+ * This function change read only attribute of settings form(read only when in game mode and off when need to choose settings)
+ * @param {} addReadOnly 
+ */
 function changeSettingsReadOnlyPrperty(addReadOnly){
 	if(addReadOnly){
 		let gameAndSettingsDiv=document.getElementById("gameAndSettingsDiv");
