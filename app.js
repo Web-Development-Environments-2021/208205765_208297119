@@ -1,5 +1,5 @@
 //usersDict : [userName] = [password, fullName, email, birthDate]
-let usersDict={"k":["k", "", "", "",""]};
+let usersDict={"k":["k", "", "", ""]};
 let currentDisplayedDiv="#welcomeContainer";
 let keys={"Up":"","Down":"","Left":"","Right":""};
 let validSettingsData=true;
@@ -88,7 +88,7 @@ $(function(){
 	$.validator.addMethod("checkName",function(value,element){
 		for(let i=0;i<value.length;i++){
 			let asciiValue=value.charAt(i).charCodeAt(0);
-			if(!((asciiValue<123 && asciiValue>96) || (asciiValue>=65 && asciiValue<=90))){
+			if(!((asciiValue<123 && asciiValue>96) || (asciiValue>=65 && asciiValue<=90)) && asciiValue!=32){
 				return false;
 			}
 		}
@@ -113,6 +113,11 @@ $(document).ready(function(){
 			event.preventDefault();
 		}
 	},false);
+	$("#fullName").keyup(function(event){
+		if(event.keyCode == 32){
+			$("#fullName").val($("#fullName").val()+' ');
+		}
+	}); 
 	$("#registerForm").validate({//validate registration using jquery validator
 		rules:{
 			userName:{
@@ -125,10 +130,6 @@ $(document).ready(function(){
 				minlength:6
 			},
 			fullName:{
-				required:true,
-				checkName:true
-			},
-			lastName:{
 				required:true,
 				checkName:true
 			},
@@ -149,12 +150,8 @@ $(document).ready(function(){
 				minlength:"Password must be at least 6 chars"
 			},
 		fullName:{
-			required:"Please enter first name",
-			checkName:"First name must contain only letters"
-		},
-		lastName:{
-			required:"Please enter last name",
-			checkName:"Last name must contain only letters"
+			required:"Please enter full name",
+			checkName:"Full name must contain only letters"
 		},
 		email:{
 			required:"Please enter email",
@@ -165,10 +162,9 @@ $(document).ready(function(){
 			let userName=$("#userName").val();
 			let password=$("#password").val();
 			let fullName=$("#fullName").val();
-			let lasName=$("#lastName").val();
 			let email=$("#email").val();
 			let birthDate=$("#birthDate").val();
-			usersDict[userName]=[password, fullName,lasName, email, birthDate];
+			usersDict[userName]=[password, fullName, email, birthDate];
 			form.reset();
 			showWelcomeScreen();
 		}
@@ -263,6 +259,8 @@ function showSettings(){
 function switchDivs(newDivToSwitchTo,display){
 	if(currentDisplayedDiv=="#gameAndSettingsDiv"){
 		stopGamesIntervals();
+		backgroundSong.pause();
+		backgroundSong.currentTime=0;
 	}
 	$(currentDisplayedDiv).css("display","none");
 	currentDisplayedDiv=newDivToSwitchTo;
@@ -278,7 +276,7 @@ function stopGamesIntervals(){
 	});
 	gameIntervals=[];
 	backgroundSong.pause();//stop background song
-	backgroundSong.currentTime=0;
+	
 }
 
 /**
@@ -331,6 +329,8 @@ function validateSettings(){
 		changeSettingsReadOnlyPrperty(true);
 		$("#stopGameButton").css("display","inline");
 		$("#resumeGameButton").css("display","inline");
+		$("#stopMusicButton").css("display","inline");
+		$("#resumeMusicButton").css("display","inline");
 		$(".explanationRow").css("display","block");
 		startGame();
 		$("#gameDiv").css("display","flex");
@@ -663,6 +663,9 @@ function finishGame(){
 	}
 	$("#stopGameButton").css("display","none");
 	$("#resumeGameButton").css("display","none");
+	$("#stopMusicButton").css("display","none");
+	$("#resumeMusicButton").css("display","none");
+	backgroundSong.currentTime=0;
 }
 
 /**
@@ -729,7 +732,8 @@ function drawMap(){
 					ctx.beginPath();
 					ctx.fillStyle = ballsColors[board[x][y]];
 					ctx.arc(x*sizeX + sizeX/2, y*sizeY + sizeY/2, radiusCandys[board[x][y]], 0, Math.PI*2);
-					ctx.fill();					
+					ctx.fill();
+										
 				}
 			}				
 		}
@@ -1287,6 +1291,9 @@ function changeLives(num){
 		stopGamesIntervals();
 		$("#stopGameButton").css("display","none");
 		$("#resumeGameButton").css("display","none");
+		$("#stopMusicButton").css("display","none");
+		$("#resumeMusicButton").css("display","none");
+		backgroundSong.currentTime=0;
 		alert("Loser!");
 		return true;
 	}
@@ -1310,6 +1317,7 @@ function aboutScreen(){
 	if(currentDisplayedDiv=="#gameAndSettingsDiv"){
 		if(document.getElementById("gameDiv").style.display!="none"){//if game div is displayed, pause the game
 			stopGamesIntervals();
+			backgroundSong.pause();
 		}
 	}
 	$("#modalDiv").css("display","block");
@@ -1319,6 +1327,7 @@ function closeAbout(){
 	if(currentDisplayedDiv=="#gameAndSettingsDiv"){
 		if(document.getElementById("gameDiv").style.display!="none" && !gameStopped){//if game div was displayed, resume the game
 			setGameIntervals();
+			backgroundSong.play();
 		}
 	}
 	$("#modalDiv").css("display","none");
@@ -1339,6 +1348,7 @@ function resumeGame(){
 	if(gameStopped){
 		setGameIntervals();
 		gameStopped=false;
+		backgroundSong.play();
 	}
 }
 
