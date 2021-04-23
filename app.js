@@ -47,6 +47,7 @@ let slowMotionTime = -500;
 let bonusTime;
 let bonusTimeTolive = 100*5;
 let gameStopped=false;
+let musicStopped=false;
 
 // add method that checks if the password contains 1 digit and 1 letter to validator
 $(function(){
@@ -598,6 +599,7 @@ function initParams(){
 	gameStopped=false;
 	ghostSpeed = 1.5;
 	backgroundSong.volume = 0.5;
+	musicStopped=false;
 }
 
 /**
@@ -666,6 +668,7 @@ function finishGame(){
 	$("#stopMusicButton").css("display","none");
 	$("#resumeMusicButton").css("display","none");
 	backgroundSong.currentTime=0;
+	gameStopped=true;
 }
 
 /**
@@ -1293,6 +1296,7 @@ function changeLives(num){
 		$("#resumeGameButton").css("display","none");
 		$("#stopMusicButton").css("display","none");
 		$("#resumeMusicButton").css("display","none");
+		gameStopped=true;
 		backgroundSong.currentTime=0;
 		alert("Loser!");
 		return true;
@@ -1327,7 +1331,9 @@ function closeAbout(){
 	if(currentDisplayedDiv=="#gameAndSettingsDiv"){
 		if(document.getElementById("gameDiv").style.display!="none" && !gameStopped){//if game div was displayed, resume the game
 			setGameIntervals();
-			backgroundSong.play();
+			if(!musicStopped){
+				backgroundSong.play();
+			}
 		}
 	}
 	$("#modalDiv").css("display","none");
@@ -1348,7 +1354,9 @@ function resumeGame(){
 	if(gameStopped){
 		setGameIntervals();
 		gameStopped=false;
-		backgroundSong.play();
+		if(!musicStopped){// if user didn't stop the music before
+			backgroundSong.play();
+		}
 	}
 }
 
@@ -1380,8 +1388,10 @@ function changeSettingsReadOnlyPrperty(addReadOnly){
 
 function pauseMusic(){
 	backgroundSong.pause();
+	musicStopped=true;
 }
 
 function resumeMusic(){
 	backgroundSong.play();
+	musicStopped=false;
 }
